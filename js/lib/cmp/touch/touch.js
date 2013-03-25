@@ -185,13 +185,13 @@
 				var isAlive = el.data('isAlive');
 				if (!isAlive) {
 					el.data('isAlive', true)
-                         .data('pos', 0)
-                         .data('segment', 0)
-                         .data('segments', this.segments)
-                         .data('direction', helper.getDirection(el, this.direction))
-                         .data('segmentPx', helper.getSegmentPx(el, this.segmentPx))
-                         .data('snapSpeed', this.snapSpeed)
-                         .data('flickSnapSpeed', this.flickSnapSpeed);
+                      .data('pos', 0)
+                      .data('segment', 0)
+                      .data('segments', this.segments)
+                      .data('direction', helper.getDirection(el, this.direction))
+                      .data('segmentPx', helper.getSegmentPx(el, this.segmentPx))
+                      .data('snapSpeed', this.snapSpeed)
+                      .data('flickSnapSpeed', this.flickSnapSpeed);
                     this.bind();
                     this.create();
                     if(!helper.browserSupport('transform')){
