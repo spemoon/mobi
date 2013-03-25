@@ -300,7 +300,7 @@
 				var pos       = parseInt(el.data('pos'));
 				var nearestSeg;
 
-				nearestSeg = (pos < 0) ? Math.abs(Math.round( pos / segments)) : 0;
+				nearestSeg = (pos < 0) ? Math.abs(Math.round( pos / segmentPx )) : 0;
 				console.log('nearestSeg===>' + nearestSeg);
 
 				if (typeof callback == 'function') {
