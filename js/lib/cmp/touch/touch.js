@@ -204,6 +204,7 @@
 			},
 			bind: function(){
 				var el = $(this.node);
+				var _this = this;
 				/*el.bind({
 					'onCreate': this.create.call(this.onCreate),
 					'onStart': this.start.call(this.onStart),
@@ -213,18 +214,18 @@
 				el.bind({
 					touchstart: function(e){
 						helper.resetTouchData(e);
-						this.start();
+						_this.start();
 					},
 					touchmove: function(e){
 						if(this.preventDefault) {
 							e.preventDefault();
 						}
 						helper.updateTouchData(e);
-						this.move();
+						_this.move();
 					},
 					touchend: function(e){
 						helper.endTouch(e);
-						this.end();
+						_this.end();
 					}
 				});
 			},
