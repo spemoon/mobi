@@ -329,6 +329,8 @@
 					} else if (seg < 0) {
 						seg = 0;
 					}
+					console.log(seg);
+					console.log(segment);
 					if (seg != segment) {
 						el.data('segment', seg);
 					}
