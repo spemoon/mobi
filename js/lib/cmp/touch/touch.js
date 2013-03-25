@@ -258,8 +258,8 @@
 				var el = $(this.node);
 				var style;
 				var direction = el.data('direction');
-				var anchor = el.data('anchor') - 0;
-				var pos = anchor + touchData.update.dist[direction] - 0;
+				var anchor = parseInt(el.data('anchor'));
+				var pos = anchor + touchData.update.dist[direction];
 
 				if (browserSupport) { //不支持CSS3处理
 					if (direction == 'y') {
@@ -292,11 +292,11 @@
 			end: function(callback){
 				var el        = $(this.node);
 				var direction = el.data('direction');
-				var segment   = el.data('segment') - 0;
-				var segments  = el.data('segments') - 0;
-				var segmentPx = el.data('segmentPx') - 0;
-				var anchor    = el.data('anchor') - 0;
-				var pos       = el.data('pos') - 0;
+				var segment   = parseInt(el.data('segment'));
+				var segments  = parseInt(el.data('segments'));
+				var segmentPx = parseInt(el.data('segmentPx'));
+				var anchor    = parseInt(el.data('anchor'));
+				var pos       = parseInt(el.data('pos'));
 				var nearestSeg;
 
 				nearestSeg = (pos < 0) ? Math.abs(Math.round( pos / segments)) : 0;
@@ -321,8 +321,8 @@
 			},
 			segment: function (seg) {
 				var el       = $(this.node);
-				var segment  = el.data('segment') - 0;
-				var segments = el.data('segments') - 0;
+				var segment  = parseInt(el.data('segment'));
+				var segments = parseInt(el.data('segments'));
 				if (!seg) {
 					if (seg >= segments) {
 						seg = segments - 1;
@@ -337,7 +337,7 @@
 			},
 			nextSegment: function(callback){
 				console.log('nextSegment');
-				var segment = this.node.data('segment') - 0 + 1;
+				var segment = parseInt(this.node.data('segment')) + 1;
 				this.segment(segment);
 				if (typeof callback == 'function') {
 					callback.call(this, touchData, segment);
@@ -354,9 +354,9 @@
 			scrollToSegment: function(callback) {
 				var el             = $(this.node);
 				var direction      = el.data('direction');
-				var segments       = el.data('segments') - 0;
-				var segment        = el.data('segment') - 0;
-				var segmentPx      = el.data('segmentPx') - 0;
+				var segments       = parseInt(el.data('segments'));
+				var segment        = parseInt(el.data('segment'));
+				var segmentPx      = parseInt(el.data('segmentPx'));
 				var snapSpeed      = parseFloat(el.data('snapSpeed'));
 				var flickSnapSpeed = parseFloat(el.data('flickSnapSpeed'));
 				var pos            = -(segment * segmentPx);
