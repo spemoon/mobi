@@ -49,7 +49,7 @@
 			return direction;
 		},
 		getSegmentPx: function(el, segmentPx){
-			if(parseInt(segmentPx)){
+			if(!parseInt(segmentPx)){
 				var segments  = el.data('segments');
 				var direction = helper.getDirection(el, el.data('direction'));
 				segmentPx = (direction == 'y') ? el.height() / segments : el.width() / segments;
