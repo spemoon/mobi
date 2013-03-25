@@ -384,6 +384,52 @@
 				if (typeof callback == 'function') {
 					callback.call(this, touchData, segment);
 				}
+			},
+			flick: function(callback){
+				var el = $(this.node);
+
+				if (touchData.end.flick.x == 1) {
+					this.flickRight();
+				} else if (touchData.end.flick.y == -1) {
+					this.flickLeft();
+				}
+
+				if (touchData.end.flick.y == 1) {
+					this.flickDown();
+				} else if (touchData.end.flick.y == -1) {
+					this.flickUp();
+				}
+				if (typeof callback == 'function') {
+					callback.call(this, touchData);
+				}
+			},
+			flickRight: function (callback) {
+				console.log('flickRight');
+				this.prevSegment();
+				if (typeof callback == 'function') {
+					callback.call(this, touchData);
+				}
+			},
+			flickLeft: function (callback) {
+				console.log('flickLeft');
+				this.nextSegment();
+				if (typeof callback == 'function') {
+					callback.call(this, touchData);
+				}
+			},
+			flickDown: function (callback) {
+				console.log('flickDown');
+				this.prevSegment();
+				if (typeof callback == 'function') {
+					callback.call(this, touchData);
+				}
+			},
+			flickUp: function (callback) {
+				console.log('flickDown');
+				this.nextSegment();
+				if (typeof callback == 'function') {
+					callback.call(this, touchData);
+				}
 			}
 		};
 	})();
