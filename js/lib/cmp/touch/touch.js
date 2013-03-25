@@ -29,7 +29,7 @@
 			}
 		},
 		touchIniObjs = 0;  // 计数初始化touch的个数
-		minDistance  = 5;  // 滑动的最小计算距离，单位px
+		minDistance  = 2;  // 滑动的最小计算距离，单位px
 		flickHold    = 0.7;   // 判定是否是轻触屏幕
 		browserSupport = false; // 默认不支持CSS3，自动判断
 		debug        = false; // debug开关
