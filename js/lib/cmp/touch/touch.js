@@ -49,7 +49,7 @@
 			return direction;
 		},
 		getSegmentPx: function(el, segmentPx){
-			if(parseInt(segmentPx)){
+			if(!parseInt(segmentPx)){
 				var segments  = el.data('segments');
 				var direction = helper.getDirection(el, el.data('direction'));
 				segmentPx = (direction == 'y') ? el.height() / segments : el.width() / segments;
@@ -204,6 +204,7 @@
 			},
 			bind: function(){
 				var el = $(this.node);
+				var _this = this;
 				/*el.bind({
 					'onCreate': this.create.call(this.onCreate),
 					'onStart': this.start.call(this.onStart),
@@ -213,18 +214,18 @@
 				el.bind({
 					touchstart: function(e){
 						helper.resetTouchData(e);
-						this.start();
+						_this.start();
 					},
 					touchmove: function(e){
 						if(this.preventDefault) {
 							e.preventDefault();
 						}
 						helper.updateTouchData(e);
-						this.move();
+						_this.move();
 					},
 					touchend: function(e){
 						helper.endTouch(e);
-						this.end();
+						_this.end();
 					}
 				});
 			},
@@ -246,6 +247,7 @@
 				var segment = el.data('segment');
 				var segmentPx = el.data('segmentPx');
 				var anchor = -(segment * segmentPx);
+				console.log('start');
 
 				el.data('anchor', anchor);
 
@@ -257,8 +259,8 @@
 				var el = $(this.node);
 				var style;
 				var direction = el.data('direction');
-				var anchor = el.data('anchor') - 0;
-				var pos = anchor + touchData.update.dist[direction] - 0;
+				var anchor = parseInt(el.data('anchor'));
+				var pos = anchor + touchData.update.dist[direction];
 
 				if (browserSupport) { //不支持CSS3处理
 					if (direction == 'y') {
@@ -271,7 +273,7 @@
 						});
 					}
 				} else {
-					style = (d == 'y') ? '(0,'+pos+'px,0)' : '('+pos+'px,0,0)';
+					style = (direction == 'y') ? '(0,'+pos+'px,0)' : '('+pos+'px,0,0)';
 
 					if(typeof document.getElementById(el.attr('id')).style.webkitTransform != 'undefined') {
 						document.getElementById(el.attr('id')).style.webkitTransform = 'translate3d'+style;
@@ -291,14 +293,15 @@
 			end: function(callback){
 				var el        = $(this.node);
 				var direction = el.data('direction');
-				var segment   = el.data('segment') - 0;
-				var segments  = el.data('segments') - 0;
-				var segmentPx = el.data('segmentPx') - 0;
-				var anchor    = el.data('anchor') - 0;
-				var pos       = el.data('pos') - 0;
+				var segment   = parseInt(el.data('segment'));
+				var segments  = parseInt(el.data('segments'));
+				var segmentPx = parseInt(el.data('segmentPx'));
+				var anchor    = parseInt(el.data('anchor'));
+				var pos       = parseInt(el.data('pos'));
 				var nearestSeg;
 
-				nearestSeg = (pos < 0) ? Math.abs(Math.round( pos / segments)) : 0;
+				nearestSeg = (pos < 0) ? Math.abs(Math.round( pos / segmentPx )) : 0;
+				console.log('nearestSeg===>' + nearestSeg);
 
 				if (typeof callback == 'function') {
 					callback.call(this, touchData, segment);
@@ -319,15 +322,18 @@
 				}
 			},
 			segment: function (seg) {
+				console.log('segment===>' + seg);
 				var el       = $(this.node);
-				var segment  = el.data('segment') - 0;
-				var segments = el.data('segments') - 0;
-				if (!seg) {
+				var segment  = parseInt(el.data('segment'));
+				var segments = parseInt(el.data('segments'));
+				if (typeof seg != 'undefined') {
 					if (seg >= segments) {
 						seg = segments - 1;
 					} else if (seg < 0) {
 						seg = 0;
 					}
+					console.log(seg);
+					console.log(segment);
 					if (seg != segment) {
 						el.data('segment', seg);
 					}
@@ -336,7 +342,8 @@
 			},
 			nextSegment: function(callback){
 				console.log('nextSegment');
-				var segment = this.node.data('segment') - 0 + 1;
+				var el = $(this.node);
+				var segment = parseInt(el.data('segment')) + 1;
 				this.segment(segment);
 				if (typeof callback == 'function') {
 					callback.call(this, touchData, segment);
@@ -344,7 +351,8 @@
 			},
 			prevSegment: function(callback){
 				console.log('prevSegment');
-				var segment = this.node.data('segment') - 1;
+				var el = $(this.node);
+				var segment = el.data('segment') - 1;
 				this.segment(segment);
 				if (typeof callback == 'function') {
 					callback.call(this, touchData, segment);
@@ -353,9 +361,9 @@
 			scrollToSegment: function(callback) {
 				var el             = $(this.node);
 				var direction      = el.data('direction');
-				var segments       = el.data('segments') - 0;
-				var segment        = el.data('segment') - 0;
-				var segmentPx      = el.data('segmentPx') - 0;
+				var segments       = parseInt(el.data('segments'));
+				var segment        = parseInt(el.data('segment'));
+				var segmentPx      = parseInt(el.data('segmentPx'));
 				var snapSpeed      = parseFloat(el.data('snapSpeed'));
 				var flickSnapSpeed = parseFloat(el.data('flickSnapSpeed'));
 				var pos            = -(segment * segmentPx);
@@ -382,6 +390,52 @@
 				}
 				if (typeof callback == 'function') {
 					callback.call(this, touchData, segment);
+				}
+			},
+			flick: function(callback){
+				var el = $(this.node);
+
+				if (touchData.end.flick.x == 1) {
+					this.flickRight();
+				} else if (touchData.end.flick.y == -1) {
+					this.flickLeft();
+				}
+
+				if (touchData.end.flick.y == 1) {
+					this.flickDown();
+				} else if (touchData.end.flick.y == -1) {
+					this.flickUp();
+				}
+				if (typeof callback == 'function') {
+					callback.call(this, touchData);
+				}
+			},
+			flickRight: function (callback) {
+				console.log('flickRight');
+				this.prevSegment();
+				if (typeof callback == 'function') {
+					callback.call(this, touchData);
+				}
+			},
+			flickLeft: function (callback) {
+				console.log('flickLeft');
+				this.nextSegment();
+				if (typeof callback == 'function') {
+					callback.call(this, touchData);
+				}
+			},
+			flickDown: function (callback) {
+				console.log('flickDown');
+				this.prevSegment();
+				if (typeof callback == 'function') {
+					callback.call(this, touchData);
+				}
+			},
+			flickUp: function (callback) {
+				console.log('flickUp');
+				this.nextSegment();
+				if (typeof callback == 'function') {
+					callback.call(this, touchData);
 				}
 			}
 		};
