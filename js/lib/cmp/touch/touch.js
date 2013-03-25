@@ -247,6 +247,7 @@
 				var segment = el.data('segment');
 				var segmentPx = el.data('segmentPx');
 				var anchor = -(segment * segmentPx);
+				console.log('start');
 
 				el.data('anchor', anchor);
 
@@ -320,6 +321,7 @@
 				}
 			},
 			segment: function (seg) {
+				console.log('segment===>' + seg);
 				var el       = $(this.node);
 				var segment  = parseInt(el.data('segment'));
 				var segments = parseInt(el.data('segments'));
@@ -427,7 +429,7 @@
 				}
 			},
 			flickUp: function (callback) {
-				console.log('flickDown');
+				console.log('flickUp');
 				this.nextSegment();
 				if (typeof callback == 'function') {
 					callback.call(this, touchData);
