@@ -342,7 +342,8 @@
 			},
 			nextSegment: function(callback){
 				console.log('nextSegment');
-				var segment = parseInt(this.node.data('segment')) + 1;
+				var el = $(this.node);
+				var segment = parseInt(el.data('segment')) + 1;
 				this.segment(segment);
 				if (typeof callback == 'function') {
 					callback.call(this, touchData, segment);
@@ -350,7 +351,8 @@
 			},
 			prevSegment: function(callback){
 				console.log('prevSegment');
-				var segment = this.node.data('segment') - 1;
+				var el = $(this.node);
+				var segment = el.data('segment') - 1;
 				this.segment(segment);
 				if (typeof callback == 'function') {
 					callback.call(this, touchData, segment);
