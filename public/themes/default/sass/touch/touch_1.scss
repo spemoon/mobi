@@ -1,0 +1,75 @@
+@import '../reset.scss';
+
+#demo1-wrapper {
+	
+	width: 320px;
+	height: 460px;
+	overflow: hidden;
+	background: #DDDDDD;
+
+}
+
+#demo1 {
+	height: 480px;
+	width: 1600px;
+	-webkit-perspective: 1000;
+}
+	
+.card, .front, .back {
+	border-radius: 10px;
+	color: #fff;
+	float: left;
+	height: 440px;
+	line-height: 440px;
+	margin: 10px;
+	position: relative;
+	padding: 0;
+	text-align: center;
+	width: 300px;
+}
+
+.front, .back {
+	background: #fff;
+	position: absolute;
+	top: 0;
+	left: 0;
+	margin: 0;
+	-webkit-backface-visibility: hidden;
+}
+
+.back {
+	color: #fff;
+	-webkit-transform: rotateY(180deg) translate3d(0,0,0);
+	//background: url(img/fabric.png);
+}
+
+.card {
+	-webkit-transform-style: preserve-3d;
+	-webkit-animation-name: default;
+	-webkit-animation-duration: 0.5s;
+	-webkit-animation-timing-function: ease-in-out;
+	-webkit-animation-iteration-count: 1;
+	-webkit-animation-fill-mode: forwards;
+}
+
+.card.flipped {
+	-webkit-animation-name: cardflipped;
+}
+
+
+#card1 .front { color: #000; }	
+#card2 .front { background: #B00004; }
+#card3 .front { background: #1C8B00; }
+#card4 .front { background: #FF9500; }
+#card5 .front { background: #3A8AD5; }
+
+@-webkit-keyframes default { 
+	from 	{ -webkit-transform: rotateY(180deg) translate3d(0,0,0); }
+	to 		{ -webkit-transform: rotateY(0deg) translate3d(0,0,0); }
+}
+
+@-webkit-keyframes cardflipped { 
+	from 	{ -webkit-transform: rotateY(0deg) translate3d(0,0,0); }
+	to 		{ -webkit-transform: rotateY(180deg) translate3d(0,0,0); }
+}
+
