@@ -262,7 +262,7 @@
 				var anchor = parseInt(el.data('anchor'));
 				var pos = anchor + touchData.update.dist[direction];
 
-				//if (browserSupport) { //不支持CSS3处理
+				if (browserSupport) { //不支持CSS3处理
 					if (direction == 'y') {
 						el.css({
 							'top': pos
@@ -272,7 +272,7 @@
 							'left': pos
 						});
 					}
-				/*} else {
+				} else {
 					style = (direction == 'y') ? '(0,'+pos+'px,0)' : '('+pos+'px,0,0)';
 
 					if(typeof document.getElementById(el.attr('id')).style.webkitTransform != 'undefined') {
@@ -282,7 +282,7 @@
 					} else {
 						document.getElementById(el.attr('id')).style.transform = 'translate3d'+style;
 					}
-				}*/
+				}
 
 				el.data('pos', pos);
 
