@@ -272,7 +272,7 @@
 						});
 					}
 				} else {
-					style = (d == 'y') ? '(0,'+pos+'px,0)' : '('+pos+'px,0,0)';
+					style = (direction == 'y') ? '(0,'+pos+'px,0)' : '('+pos+'px,0,0)';
 
 					if(typeof document.getElementById(el.attr('id')).style.webkitTransform != 'undefined') {
 						document.getElementById(el.attr('id')).style.webkitTransform = 'translate3d'+style;
