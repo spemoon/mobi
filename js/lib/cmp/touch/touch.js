@@ -326,7 +326,7 @@
 				var el       = $(this.node);
 				var segment  = parseInt(el.data('segment'));
 				var segments = parseInt(el.data('segments'));
-				if (!seg) {
+				if (typeof seg != 'undefined') {
 					if (seg >= segments) {
 						seg = segments - 1;
 					} else if (seg < 0) {
