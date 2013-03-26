@@ -2,8 +2,8 @@
 
 	$(document).ready(function(){
 		var touchX = new touch({
-			node: 'demo1'
-			//debugEnabled: true
+			node: 'demo1',
+			debugEnabled: true
 		});
 		touchX.init();
 
