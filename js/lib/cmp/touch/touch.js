@@ -44,7 +44,7 @@
 				debug = true;
 				touchData = touchDataObj;
 				touchData.touchLog = [];
-				var html = '<div id="touchDebugger" style="position: fixed; bottom: 0; margin: 0 auto; padding: 10px; width: 100%; background: #000; color: #fff; font-family: courier, sans-serif;">Debugger</div>';
+				var html = '<div id="touchDebugger" style="position: fixed; bottom: 0; margin: 0 auto; padding: 10px; width: 100%; height: 100px; background: #000; color: #fff; font-family: courier, sans-serif;">Debugger</div>';
 				$('body').append(html);
 			}
 		},
