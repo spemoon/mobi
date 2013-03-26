@@ -20,6 +20,7 @@ body{
 .card, .front, .back {
 	border-radius: 10px;
 	color: #fff;
+	background: #333;
 	float: left;
 	height: 440px;
 	line-height: 440px;
@@ -59,11 +60,10 @@ body{
 }
 
 
-#card1 .front { color: #000; }	
-#card2 .front { background: #B00004; }
-#card3 .front { background: #1C8B00; }
-#card4 .front { background: #FF9500; }
-#card5 .front { background: #3A8AD5; }
+#card2 { background: #B00004; }
+#card3 { background: #1C8B00; }
+#card4 { background: #FF9500; }
+#card5 { background: #3A8AD5; }
 
 @-webkit-keyframes default { 
 	from 	{ -webkit-transform: rotateY(180deg) translate3d(0,0,0); }
