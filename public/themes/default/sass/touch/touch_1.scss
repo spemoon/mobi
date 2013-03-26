@@ -1,12 +1,14 @@
 @import '../reset.scss';
 
+body{
+	min-height: 416px;
+}
 #demo1-wrapper {
 	
 	width: 320px;
 	height: 460px;
 	overflow: hidden;
 	background: #DDDDDD;
-
 }
 
 #demo1 {
