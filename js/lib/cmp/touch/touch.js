@@ -40,6 +40,41 @@
 	 */
 	var helper = {
 		_debugger: function(){
+			if (!$('#touchDebugger').length) {
+				debug = true;
+				touchData = touchDataObj;
+				touchData.touchLog = [];
+				var html = '<div id="touchDebugger" style="position: fixed; bottom: 0; margin: 0 auto; padding: 10px; width: 100%; background: #000; color: #fff; font-family: courier, sans-serif;">Debugger</div>';
+				$('body').append(html);
+			}
+		},
+		_logTouch: function(e){
+			if (debug) {
+				touchData.touchLog.splice(0, 0, e);
+				helper._printTouchData();
+			}
+		},
+		_printTouchData: function(){
+			var touchLog = '';
+			for(var i = 0; i < 3; i++){
+				touchLog += touchData.touchLog[i] + ' | ';
+			}
+
+			var text = '';
+			text += '<p>' + touchLog + '</p>';
+			text += '<p>star:{x:' + touchData.start.x+ ', y:' + touchData.start.y + ', time:' + touchData.start.time + '}</p>';
+			text += '<p>update:{</p>';
+			text += '<p>prevPos:{x:' + touchData.update.prevPos.x+ ', y:' + touchData.update.prevPos.y + '},</p>';
+			text += '<p>dist:{x:' + touchData.update.dist.x+ ', y:' + touchData.update.dist.y + '},</p>';
+			text += '<p>dir:{x:' + touchData.update.dir.x+ ', y:' + touchData.update.dir.y + '}</p>';
+			text += '<p>}</p>';
+			text += '<p>end:{</p>';
+			text += '<p>duration:{' + touchData.end.duration + '}</p>';
+			text += '<p>speed:{x:' + touchData.end.speed.x + ', y: ' + touchData.end.speed.y + '}</p>';
+			text += '<p>flick:{x:' + touchData.end.flick.x + ', y: ' + touchData.end.flick.y + '}</p>';
+			text += '<p>}</p>';
+
+			$('#touchDebugger').append(text);
 
 		},
 		getDirection: function(el, direction){
@@ -68,7 +103,7 @@
 			touchData.update.prevPos = {x: pageX, y: pageY};
 
 			if (debug) {
-				helper._debugger();
+				helper._printTouchData();
 			}
 		},
 		updateTouchData: function(e){
@@ -106,7 +141,7 @@
 			touchData.update.dir     = {x: distX, y: distY};
 
 			if (debug) {
-				helper._debugger();
+				helper._printTouchData();
 			}
 		},
 		endTouch: function(e){
@@ -130,7 +165,7 @@
 			touchData.end.flick    = {x: flickX, y: flickY};
 
 			if (debug) {
-				helper._debugger();
+				helper._printTouchData();
 			}
 		},
 		browserSupport: function(prop){
@@ -200,6 +235,9 @@
 					if(parseInt(this.flickHold)){
 						flickHold = parseInt(this.flickHold);
 					}
+					if (debug || this.debugEnabled) {
+						helper._debugger();
+					}
 				}
 			},
 			bind: function(){
@@ -233,7 +271,7 @@
 				var el        = $(this.node);
 				touchData = touchDataObj;
 				touchIniObjs++;
-				console.log('create');
+				helper._logTouch('create');
 				if (!el.data('id')) {
 					el.data('id', 'touch-' + touchIniObjs);
 				}
@@ -247,7 +285,7 @@
 				var segment = el.data('segment');
 				var segmentPx = el.data('segmentPx');
 				var anchor = -(segment * segmentPx);
-				console.log('start');
+				helper._logTouch('create');
 
 				el.data('anchor', anchor);
 
@@ -341,7 +379,7 @@
 				}
 			},
 			nextSegment: function(callback){
-				console.log('nextSegment');
+				helper._logTouch('nextSegment');
 				var el = $(this.node);
 				var segment = parseInt(el.data('segment')) + 1;
 				this.segment(segment);
@@ -350,7 +388,7 @@
 				}
 			},
 			prevSegment: function(callback){
-				console.log('prevSegment');
+				helper._logTouch('prevSegment');
 				var el = $(this.node);
 				var segment = el.data('segment') - 1;
 				this.segment(segment);
@@ -393,6 +431,7 @@
 				}
 			},
 			flick: function(callback){
+				helper._logTouch('flick');
 				var el = $(this.node);
 
 				if (touchData.end.flick.x == 1) {
@@ -411,28 +450,28 @@
 				}
 			},
 			flickRight: function (callback) {
-				console.log('flickRight');
+				helper._logTouch('flickRight');
 				this.prevSegment();
 				if (typeof callback == 'function') {
 					callback.call(this, touchData);
 				}
 			},
 			flickLeft: function (callback) {
-				console.log('flickLeft');
+				helper._logTouch('flickLeft');
 				this.nextSegment();
 				if (typeof callback == 'function') {
 					callback.call(this, touchData);
 				}
 			},
 			flickDown: function (callback) {
-				console.log('flickDown');
+				helper._logTouch('flickDown');
 				this.prevSegment();
 				if (typeof callback == 'function') {
 					callback.call(this, touchData);
 				}
 			},
 			flickUp: function (callback) {
-				console.log('flickUp');
+				helper._logTouch('flickUp');
 				this.nextSegment();
 				if (typeof callback == 'function') {
 					callback.call(this, touchData);
