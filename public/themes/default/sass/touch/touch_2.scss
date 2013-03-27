@@ -1,0 +1,16 @@
+@import '../reset.scss';
+@import '../base.scss';
+
+#demo2-wrapper{
+	width: 321px;
+	overflow: hidden;
+	margin: 0 auto;
+}
+#demo2 .col{
+	position: relative;
+	display: block;
+	float: left;
+	width: 106px;
+	height: 240px;
+	overflow: hidden;
+}

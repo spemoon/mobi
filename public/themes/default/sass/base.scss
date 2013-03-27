@@ -1,5 +1,4 @@
-$color: #369;
-
-body {
-    background: darken($color, 10%);
-}
+.clearfix { *zoom: 1; }
+.clearfix:before,
+.clearfix:after { content: ""; display: table; }
+.clearfix:after { clear: both; }

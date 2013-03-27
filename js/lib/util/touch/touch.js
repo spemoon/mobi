@@ -343,7 +343,7 @@
 				var segment = el.data('segment');
 				var segmentPx = el.data('segmentPx');
 				var anchor = -(segment * segmentPx);
-				helper._logTouch('create');
+				helper._logTouch('start');
 
 				el.data('anchor', anchor);
 
