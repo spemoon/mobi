@@ -45,7 +45,7 @@
         return function(prefix) {
             var id = ++index + '';
             return prefix ? prefix + id : id;
-        }
+        };
     })(0);
 
     /**
@@ -96,12 +96,12 @@
         var context, args, timeout, result;
         var previous = 0;
         var later = function() {
-            previous = new Date;
+            previous = new Date();
             timeout = null;
             result = fn.apply(context, args);
         };
         return function() {
-            var now = new Date;
+            var now = new Date();
             var remaining = wait - (now - previous);
             context = this;
             args = arguments;
@@ -275,7 +275,7 @@
          * @param deep
          */
         var extend = function(target, source, deep) {
-            for(key in source) {
+            for(var key in source) {
                 var v1 = source[key];
                 var v2 = target[key];
                 if(deep && (isObject(v1) || ns.isArray(v1))) {
