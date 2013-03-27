@@ -39,6 +39,10 @@
 	 * @type {Object}
 	 */
 	var helper = {
+		/**
+		 * 显示debug的相关窗口
+		 * @return {[type]} [description]
+		 */
 		_debugger: function(){
 			if (!$('#touchDebugger').length) {
 				debug = true;
@@ -48,12 +52,21 @@
 				$('body').append(html);
 			}
 		},
+		/**
+		 * 记录touch过程中的各个事件
+		 * @param  {[type]} e [description]
+		 * @return {[type]}   [description]
+		 */
 		_logTouch: function(e){
 			if (debug) {
 				touchData.touchLog.splice(0, 0, e);
 				helper._printTouchData();
 			}
 		},
+		/**
+		 * 打印各个过程中的数值
+		 * @return {[type]} [description]
+		 */
 		_printTouchData: function(){
 			var touchLog = '';
 			for(var i = 0; i < 3; i++){
@@ -77,12 +90,24 @@
 			$('#touchDebugger').append(text);
 
 		},
+		/**
+		 * 获取滑动方向
+		 * @param  {[type]} el        [description]
+		 * @param  {[type]} direction [description]
+		 * @return {[type]}           [description]
+		 */
 		getDirection: function(el, direction){
 			if ((direction !== 'x') && (direction !== 'y')) {
 				direction = (el.height() > el.width()) ? 'y' : 'x';
 			}
 			return direction;
 		},
+		/**
+		 * 获取每段的长度，单位px
+		 * @param  {[type]} el        [description]
+		 * @param  {[type]} segmentPx [description]
+		 * @return {[type]}           [description]
+		 */
 		getSegmentPx: function(el, segmentPx){
 			if(!parseInt(segmentPx)){
 				var segments  = el.data('segments');
@@ -91,6 +116,11 @@
 			}
 			return segmentPx;
 		},
+		/**
+		 * 重置触摸过程中的数值
+		 * @param  {[type]} e [description]
+		 * @return {[type]}   [description]
+		 */
 		resetTouchData: function(e) {
 			var pageX, pageY;
 
@@ -106,6 +136,11 @@
 				helper._printTouchData();
 			}
 		},
+		/**
+		 * 更新触摸过程中的数值变化
+		 * @param  {[type]} e [description]
+		 * @return {[type]}   [description]
+		 */
 		updateTouchData: function(e){
 			var pageX, pageY;
 
@@ -144,6 +179,11 @@
 				helper._printTouchData();
 			}
 		},
+		/**
+		 * 记录触摸结束的数值
+		 * @param  {[type]} e [description]
+		 * @return {[type]}   [description]
+		 */
 		endTouch: function(e){
 
 			var duration = (e.timeStamp - touchData.start.time);
@@ -168,6 +208,11 @@
 				helper._printTouchData();
 			}
 		},
+		/**
+		 * 判断是否支持CSS3
+		 * @param  {[type]} prop [description]
+		 * @return {[type]}      [description]
+		 */
 		browserSupport: function(prop){
 			var div     = document.createElement('div');
 			var vendors = 'Khtml Ms O Moz Webkit'.split(' ');
@@ -194,6 +239,11 @@
 	 *  node            绑定的节点
 	 *  debugEnabled    是否允许debug,后面会设计一个debug的位置
 	 *  segments        节点内部包含的段数
+	 *  segmentPx       每段的长度，单位px
+	 *  preventDefault  是否阻止默认事件，默认true
+	 *  flickHold       是否是轻触，默认false
+	 *  snapSpeed       动画速度
+	 *  flickSnapSpeed  轻触动画速度
 	 * @return {[type]}
 	 */
 	var touch = function(params) {
@@ -206,15 +256,15 @@
 		this.flickHold      = params.flickHold || false;
 		this.snapSpeed      = params.snapSpeed || 0.3;
 		this.flickSnapSpeed = params.flickSnapSpeed || 0.3;
-		this.onCreate       = params.onCreate || false;
-		this.onStart        = params.onStart || false;
-		this.onMove         = params.onMove || false;
-		this.onEnd          = params.onEnd || false;
 	};
 
 	touch.prototype = (function(){
 		return {
             constructor: touch,
+            /**
+             * 初始化定义相关参数
+             * @return {[type]} [description]
+             */
 			init: function(){
 				var el      = $(this.node);
 				var isAlive = el.data('isAlive');
@@ -240,15 +290,13 @@
 					}
 				}
 			},
+			/**
+			 * 绑定滑动过程中的各事件
+			 * @return {[type]} [description]
+			 */
 			bind: function(){
 				var el = $(this.node);
 				var _this = this;
-				/*el.bind({
-					'onCreate': this.create.call(this.onCreate),
-					'onStart': this.start.call(this.onStart),
-					'onMove': this.move.call(this.onMove),
-					'onEnd': this.end.call(this.onEnd)
-				});*/
 				el.bind({
 					touchstart: function(e){
 						helper.resetTouchData(e);
@@ -267,6 +315,11 @@
 					}
 				});
 			},
+			/**
+			 * 创建相关节点
+			 * @param  {Function} callback [description]
+			 * @return {[type]}            [description]
+			 */
 			create: function(callback){
 				var el        = $(this.node);
 				touchData = touchDataObj;
@@ -280,6 +333,11 @@
 					callback.call(this, touchIniObjs);
 				}
 			},
+			/**
+			 * 开始准备，设定anchor
+			 * @param  {Function} callback [description]
+			 * @return {[type]}            [description]
+			 */
 			start: function(callback){
 				var el = $(this.node);
 				var segment = el.data('segment');
@@ -293,6 +351,11 @@
 					callback.call(this, touchData);
 				}
 			},
+			/**
+			 * 过程处理
+			 * @param  {Function} callback [description]
+			 * @return {[type]}            [description]
+			 */
 			move: function(callback){
 				var el = $(this.node);
 				var style;
@@ -328,6 +391,11 @@
 					callback.call(this, touchData);
 				}
 			},
+			/**
+			 * 结束数据处理
+			 * @param  {Function} callback [description]
+			 * @return {[type]}            [description]
+			 */
 			end: function(callback){
 				var el        = $(this.node);
 				var direction = el.data('direction');
@@ -339,7 +407,6 @@
 				var nearestSeg;
 
 				nearestSeg = (pos < 0) ? Math.abs(Math.round( pos / segmentPx )) : 0;
-				console.log('nearestSeg===>' + nearestSeg);
 
 				if (typeof callback == 'function') {
 					callback.call(this, touchData, segment);
@@ -359,8 +426,12 @@
 					this.segment(nearestSeg);
 				}
 			},
+			/**
+			 * 滑动到相关段落
+			 * @param  {[type]} seg [description]
+			 * @return {[type]}     [description]
+			 */
 			segment: function (seg) {
-				console.log('segment===>' + seg);
 				var el       = $(this.node);
 				var segment  = parseInt(el.data('segment'));
 				var segments = parseInt(el.data('segments'));
@@ -370,14 +441,17 @@
 					} else if (seg < 0) {
 						seg = 0;
 					}
-					console.log(seg);
-					console.log(segment);
 					if (seg != segment) {
 						el.data('segment', seg);
 					}
 					this.scrollToSegment();
 				}
 			},
+			/**
+			 * 下一个段落处理
+			 * @param  {Function} callback [description]
+			 * @return {[type]}            [description]
+			 */
 			nextSegment: function(callback){
 				helper._logTouch('nextSegment');
 				var el = $(this.node);
@@ -387,6 +461,11 @@
 					callback.call(this, touchData, segment);
 				}
 			},
+			/**
+			 * 上一个段落处理
+			 * @param  {Function} callback [description]
+			 * @return {[type]}            [description]
+			 */
 			prevSegment: function(callback){
 				helper._logTouch('prevSegment');
 				var el = $(this.node);
@@ -396,6 +475,11 @@
 					callback.call(this, touchData, segment);
 				}
 			},
+			/**
+			 * 移动到相关段落
+			 * @param  {Function} callback [description]
+			 * @return {[type]}            [description]
+			 */
 			scrollToSegment: function(callback) {
 				var el             = $(this.node);
 				var direction      = el.data('direction');
@@ -408,7 +492,6 @@
 				var easing         = 'ease-out';
 				var style;
 
-				console.log(touchData);
 				if (touchData.end.flick.x || touchData.end.flick.y) {
 					snapSpeed = flickSnapSpeed;
 					easing = 'cubic-bezier(0, .70, .35, 1)';
@@ -430,6 +513,11 @@
 					callback.call(this, touchData, segment);
 				}
 			},
+			/**
+			 * 轻触处理，这里是归为段落滑动处理了
+			 * @param  {Function} callback [description]
+			 * @return {[type]}            [description]
+			 */
 			flick: function(callback){
 				helper._logTouch('flick');
 				var el = $(this.node);
