@@ -1,4 +1,4 @@
-(function(root) {
+define(function(require, exports, module) {
     var arrProto = Array.prototype;
     var objProto = Object.prototype;
     var fnProto = Function.prototype;
@@ -12,7 +12,8 @@
 
     // 命名空间
     var ns = {};
-    root._ = ns;
+    module.exports = ns;
+
     /**
      * 判断val是否是function
      * @param val
@@ -36,6 +37,7 @@
     ns.isUndefined = function(val) {
         return val === void 0;
     };
+
     /**
      * 生成一个唯一的id
      * @param prefix 前缀
@@ -84,10 +86,13 @@
      * @returns {number}
      */
     ns.defer = function(fn) {
-        return ns.delay(fn, 1, slice.call(arguments, 1));
+        return ns.delay.apply(null, [fn, 1].concat(slice.call(arguments, 1)));
     };
     /**
-     * 单位时间间隔wait 内最多只能执行一次fn，如果单位时间内多次触发，只接受第一次，后面的触发都忽略
+     * 单位时间间隔wait 内最多只能执行一次fn
+     * 如果单位时间内多次触发，接受第一次，此时第二次，第二次将在第一次执行完wait后执行
+     * 若在第二次等待过程中，第三次进来，则第二次会被放弃（参数被替换）
+     * 同理，多次进来，第一次执行后等待wait，执行的总是最后一次
      * @param fn
      * @param wait
      * @returns {Function}
@@ -104,7 +109,7 @@
             var now = new Date();
             var remaining = wait - (now - previous);
             context = this;
-            args = arguments;
+            args = arguments; // 参数被替换，因此多次时候，等待的总是用最后一次
             if(remaining <= 0) {
                 clearTimeout(timeout);
                 timeout = null;
@@ -257,6 +262,9 @@
             return -1;
         }
     };
+    ns.inArray = function() {
+
+    };
 
     (function() {
         /**
@@ -359,4 +367,11 @@
         "'": '&#x27;',
         '/': '&#x2F;'
     });
-})(this);
+    ns.trim = function() {
+
+    };
+
+    ns.parseJSON = function() {
+
+    };
+});
