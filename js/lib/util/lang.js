@@ -6,7 +6,6 @@ define(function(require, exports, module) {
     var slice = arrProto.slice;
     var push = arrProto.push;
     var nativeBind = fnProto.bind;
-    var nativeForEach = arrProto.forEach;
     var nativeIndexOf = arrProto.indexOf;
     var nativeLastIndexOf = arrProto.lastIndexOf;
 
@@ -37,18 +36,6 @@ define(function(require, exports, module) {
     ns.isUndefined = function(val) {
         return val === void 0;
     };
-
-    /**
-     * 生成一个唯一的id
-     * @param prefix 前缀
-     * @returns {string}
-     */
-    ns.uniqueId = (function(index) {
-        return function(prefix) {
-            var id = ++index + '';
-            return prefix ? prefix + id : id;
-        };
-    })(0);
 
     /**
      * 给fn绑定作用域context，后续参数将作为fn的参数传入
@@ -180,6 +167,7 @@ define(function(require, exports, module) {
     };
     /**
      * obj[key]是function则执行并返回执行后的值，其他则直接返回
+     * 与underscore不同的是，underscore不接受额外参数，这里第三个参数开始是传递给obj[key]的参数
      * @param obj
      * @param key
      * @returns {*}
@@ -189,7 +177,11 @@ define(function(require, exports, module) {
             return null;
         } else {
             var value = obj[key];
-            return ns.isFunction(value) ? value.call(obj) : value;
+            if(ns.isFunction(value)) {
+                return value.apply(obj, slice.call(arguments, 2));
+            } else {
+                return value;
+            }
         }
     };
 
@@ -197,19 +189,22 @@ define(function(require, exports, module) {
      * 遍历数组或对象，逐个执行迭代器
      * @param obj
      * @param iterator 迭代器，参数为(当前元素，当前下标/key，整个数组/对象)
+     *                 和underscore不同的是，返回false将中断遍历
      * @param context
      */
     ns.each = function(obj, iterator, context) {
         if(obj) {
-            if(nativeForEach && obj.forEach === nativeForEach) {
-                obj.forEach(iterator, context);
-            } else if(obj.length === +obj.length) {
+            if(obj.length === +obj.length) {
                 for(var i = 0, l = obj.length; i < l; i++) {
-                    iterator.call(context, obj[i], i, obj);
+                    if(iterator.call(context, obj[i], i, obj) === false) {
+                        return obj;
+                    }
                 }
             } else {
                 for(var key in obj) {
-                    iterator.call(context, obj[key], key, obj);
+                    if(iterator.call(context, obj[key], key, obj) === false) {
+                        return obj;
+                    }
                 }
             }
         }
@@ -261,9 +256,6 @@ define(function(require, exports, module) {
         } else {
             return -1;
         }
-    };
-    ns.inArray = function() {
-
     };
 
     (function() {
@@ -332,6 +324,17 @@ define(function(require, exports, module) {
     })();
 
     /**
+     * 生成一个唯一的id
+     * @param prefix 前缀
+     * @returns {string}
+     */
+    ns.uniqueId = (function(index) {
+        return function(prefix) {
+            var id = ++index + '';
+            return prefix ? prefix + id : id;
+        };
+    })(0);
+    /**
      * 转义/反转义 &><"'/这六个字符
      */
     (function(map) {
@@ -367,11 +370,42 @@ define(function(require, exports, module) {
         "'": '&#x27;',
         '/': '&#x2F;'
     });
-    ns.trim = function() {
-
+    /**
+     * 消除字符串两边的空白
+     * @param str
+     * @returns {*}
+     */
+    ns.trim = function(str) {
+        if(typeof str === 'string') {
+            return str.trim ? str.trim() : str.replace(/^\s+|\s+$/g, '');
+        } else {
+            return str;
+        }
     };
-
-    ns.parseJSON = function() {
-
-    };
+    /**
+     * 将字符串解析为JSON对象
+     */
+    ns.parseJSON = (function() {
+        var rvalidchars = /^[\],:{}\s]*$/;
+        var rvalidbraces = /(?:^|:|,)(?:\s*\[)+/g;
+        var rvalidescape = /\\(?:["\\\/bfnrt]|u[\da-fA-F]{4})/g;
+        var rvalidtokens = /"[^"\\\r\n]*"|true|false|null|-?(?:\d+\.|)\d+(?:[eE][+-]?\d+|)/g;
+        return function(data) {
+            if(window.JSON && window.JSON.parse) {
+                return window.JSON.parse(data);
+            }
+            if(data === null) {
+                return data;
+            }
+            if(typeof data === 'string') {
+                data = ns.trim(data);
+                if(data) {
+                    if(rvalidchars.test(data.replace(rvalidescape, "@").replace(rvalidtokens, "]").replace(rvalidbraces, ""))) {
+                        return (new Function("return " + data))();
+                    }
+                }
+            }
+            throw new Error("Invalid JSON: " + data);
+        }
+    })();
 });
