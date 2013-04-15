@@ -243,10 +243,10 @@ define(function(require, exports, module) {
     ns.lastIndexOf = function(arr, item, index) {
         if(arr) {
             if(nativeLastIndexOf && arr.lastIndexOf === nativeLastIndexOf) {
-                return arr.lastIndexOf(item, index);
+                return arr.lastIndexOf(item, typeof index === 'number' ? index : -1);
             } else {
-                var i = index || 0;
-                for(var l = arr.length; i < l; i++) {
+                var l = arr.length - 1;
+                for(var i = Math.min(l, typeof index === 'number' ? index : l); i >= 0; i--) {
                     if(arr[i] === item) {
                         return i;
                     }
@@ -349,7 +349,7 @@ define(function(require, exports, module) {
         ns.each(map, function(val, key, map) {
             arr.escape.push(key);
             arr.unescape.push(val);
-            entityMap[val] = key;
+            entityMap.unescape[val] = key;
         });
         var reg = {
             escape: new RegExp('[' + arr.escape.join('') + ']', 'g'),

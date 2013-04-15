@@ -251,12 +251,15 @@ seajs.use(['../../../../js/lib/util/lang'], function(lang) {
         equal(lang.indexOf(a, 1, 3), 6);
     });
     test('lastIndexOf', function() {
-        var a = [1, 3, 5, '2', 4, 2, 1, 7];
-        equal(lang.lastIndexOf(a, 3), 1);
+        var a = [1, 3, 5, '2', 4, 2, 1, 3, 7];
         equal(lang.lastIndexOf(a, 2), 5);
         equal(lang.lastIndexOf(a, 0), -1);
         equal(lang.lastIndexOf(a, 1), 6);
         equal(lang.lastIndexOf(a, 1, 3), 0);
+        equal(lang.lastIndexOf(a, 1, 6), 6);
+        equal(lang.lastIndexOf(a, 3), 7);
+        equal(lang.lastIndexOf(a, 3, 1), 1);
+        equal(lang.lastIndexOf(a, 3, 0), -1);
     });
 
     module('对象增强');
@@ -339,7 +342,7 @@ seajs.use(['../../../../js/lib/util/lang'], function(lang) {
     test('escape', function() {
         var str1 = 'tom&jerry <a href="http://www.baidu.com/?key=hello&time=123456" target="_blank">"你好+朋友\'</a>';
         var str2 = 'tom&amp;jerry &lt;a href=&quot;http:&#x2F;&#x2F;www.baidu.com&#x2F;?key=hello&amp;time=123456&quot; target=&quot;_blank&quot;&gt;&quot;你好+朋友&#x27;&lt;&#x2F;a&gt;'
-        //equal(str1, lang.unescape(str2));
+        equal(str1, lang.unescape(str2));
         equal(str2, lang.escape(str1));
     });
     test('trim', function() {
@@ -354,6 +357,24 @@ seajs.use(['../../../../js/lib/util/lang'], function(lang) {
         var str1 = '{"name": "hello", "age": 123}';
         var o1 = lang.parseJSON(str1);
         equal(o1.name, 'hello');
-        equal(o1.age, 123);
+        equal(o1.age, 123) ;
+
+        var str2 = '{"name": "hello", "age": 123, "obj": {"inner": "good"}}';
+        var o2 = lang.parseJSON(str2);
+        equal(o2.obj.inner, 'good');
+
+        var str3 = '[1, 3, {"name": "tom"}]';
+        var o3 = lang.parseJSON(str3);
+        equal(o3[1], 3);
+        equal(o3[2].name, 'tom');
+
+        var str4 = '{name: "hello"}';
+        var str5 = 'not right';
+        throws(function() {
+            lang.parseJSON(str4);
+        });
+        throws(function() {
+            lang.parseJSON(str5);
+        });
     });
 });
