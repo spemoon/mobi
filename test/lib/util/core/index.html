@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>语言核心部分 单元测试</title>
+    <link rel="stylesheet" href="../../../qunit.css"/>
+    <style>
+		.hide{display: none}
+    </style>
+</head>
+<body>
+	<div class="content hide" data-alt="parent" data-remove="remove">
+		<div id="parent" class="parent">
+			<div id="child" class="child">
+				<div class="remove"></div>
+				<div class="remove1"></div>
+				<div class="hello">Hello</div>
+			</div>
+		</div>	
+		<div class="container">
+			<div class="inner first">Hello</div>
+			<div class="inner second">And</div>
+			<div class="inner third">Goodbye</div>
+		</div>
+		<form class="hide"><input type="checkbox" /></form>
+		<p class="hide contents">Hello <a href="http://mobi.org/">John</a>, how are you doing?</p>
+		<ul>
+		    <li>list item 1</li>
+		    <li>list item 2</li>
+		    <li class="third-item">list item 3</li>
+		    <li>list item 4</li>
+		    <li>list item 5</li>
+		    <li>
+		    	<ul class="level-3">
+			        <li class="item-1">1</li>
+			        <li class="item-2">2</li>
+			        <li class="item-3">3</li>
+			    </ul>
+		    </li>
+		</ul>
+		<input class="taiyang" id="check1" type="checkbox" checked="checked" />
+        <input class="yaotaiyang" id="check2" type="checkbox" />
+        <input type="text" id="text" />
+	</div>
+	<p class="wrap hide">Hello</p>
+    <div id="qunit"></div>
+    <div id="qunit-fixture"></div>
+    <script src="../../../../public/js/qunit/qunit.js"></script>
+    <script src="../../../../public/js/seajs/sea.js" data-config="config"></script>
+    <script src="./tests.js"></script>
+</body>
+</html>

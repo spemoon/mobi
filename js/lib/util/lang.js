@@ -406,6 +406,6 @@ define(function(require, exports, module) {
                 }
             }
             throw new Error("Invalid JSON: " + data);
-        }
+        };
     })();
 });
