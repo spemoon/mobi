@@ -334,6 +334,7 @@ seajs.use(['../../../../js/lib/util/core'], function($) {
     });
 
     test('val', function() {
+        ok($("#text").val(''));
         equal($("#text").val(), '');
         ok($("#text").val("checked"));
         ok($("#text").val(function(index, value) {
