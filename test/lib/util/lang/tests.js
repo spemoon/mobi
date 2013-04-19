@@ -213,7 +213,7 @@ seajs.use(['../../../../js/lib/util/lang'], function(lang) {
                 return a + b;
             }
         };
-        equal(lang.result(obj, 'name'), 'obj' );
+        equal(lang.result(obj, 'name'), 'obj');
         equal(lang.result(obj, 'age'), 22);
         equal(lang.result(obj, 'fn', 3, 4), 7);
         equal(lang.result(null), null);
@@ -357,7 +357,7 @@ seajs.use(['../../../../js/lib/util/lang'], function(lang) {
         var str1 = '{"name": "hello", "age": 123}';
         var o1 = lang.parseJSON(str1);
         equal(o1.name, 'hello');
-        equal(o1.age, 123) ;
+        equal(o1.age, 123);
 
         var str2 = '{"name": "hello", "age": 123, "obj": {"inner": "good"}}';
         var o2 = lang.parseJSON(str2);
