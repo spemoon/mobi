@@ -5,6 +5,7 @@
  * Time: 11:04 AM
  */
 define(function(require, exports, module) {
+    var $ = require('./core');
     var lang = require('./lang');
     /**
      * 事件缓存，缓存的key是zid，值是一个数组，数组的每个元素有以下结构
@@ -92,10 +93,10 @@ define(function(require, exports, module) {
      */
     function eachEvent(events, fn, iterator) {
         if(typeof events !== 'string') {
-            lang.each(events, iterator);
+            $.each(events, iterator);
         } else {
             lang.each(events.split(/\s/), function(type) {
-                iterator(type, fn)
+                iterator(type, fn);
             });
         }
     }
@@ -161,7 +162,7 @@ define(function(require, exports, module) {
                     e.stopPropagation();
                 }
                 return result;
-            }
+            };
             handler.i = set.length; // 当前处理的事件在缓存中的位置
             set.push(handler); // 将当前事件处理推入缓存
             element.addEventListener(realEvent(handler.e), handler.proxy, eventCapture(handler, capture));
@@ -179,12 +180,251 @@ define(function(require, exports, module) {
     function remove(element, events, fn, selector, capture) {
         var id = zid(element);
         eachEvent(events || '', fn, function(event, fn) {
-            findHandlers(element, event, fn, selector).forEach(function(handler) {
+            lang.each(findHandlers(element, event, fn, selector), (function(handler) {
                 delete handlers[id][handler.i];
                 element.removeEventListener(realEvent(handler.e), handler.proxy, eventCapture(handler, capture));
-            });
-        })
+            }));
+        });
     }
 
+    /**
+     * 扩展$
+     */
+    (function() {
+        var returnTrue = function() {
+            return true;
+        };
+        var returnFalse = function() {
+            return false;
+        };
 
+        // 忽略的属性，以大写A-Z开头的属性或者以layerX/layerY结尾的属性
+        var ignoreProperties = /^([A-Z]|layer[XY]$)/;
+        var eventMethods = {
+            preventDefault: 'isDefaultPrevented',
+            stopImmediatePropagation: 'isImmediatePropagationStopped',
+            stopPropagation: 'isPropagationStopped'
+        };
+
+        /**
+         * 格式化事件对象
+         */
+        var createProxy = function(event) {
+            var key;
+            var proxy = {
+                originalEvent: event // 原生事件引用
+            };
+            for(key in event) { // 复制属性
+                if(!ignoreProperties.test(key) && event[key] !== undefined) {
+                    proxy[key] = event[key];
+                }
+            }
+            // 添加三个方法 preventDefault/stopImmediatePropagation/stopPropagation
+            lang.each(eventMethods, function(predicate, name) {
+                proxy[name] = function() {
+                    this[predicate] = returnTrue;
+                    return event[name].apply(event, arguments);
+                }
+                proxy[predicate] = returnFalse;
+            });
+            return proxy;
+        };
+
+        /**
+         * 当事件中没有defalutPrevented属性时候，模仿一个
+         * @param event
+         */
+        var fix = function(event) {
+            if(!('defaultPrevented' in event)) {
+                event.defaultPrevented = false;
+                var prevent = event.preventDefault;
+                event.preventDefault = function() {
+                    this.defaultPrevented = true;
+                    prevent.call(this);
+                }
+            }
+        };
+
+        var specialEvents = {};
+        specialEvents.click = specialEvents.mousedown = specialEvents.mouseup = specialEvents.mousemove = 'MouseEvents';
+        /**
+         * 定义事件
+         * @param type
+         * @param props
+         * @returns {Event}
+         */
+        var Event = function(type, props) {
+            if(typeof type != 'string') {
+                props = type;
+                type = props.type;
+            }
+            var event = document.createEvent(specialEvents[type] || 'Events');
+            bubbles = true;
+            if(props) {
+                for(var name in props) {
+                    (name == 'bubbles') ? (bubbles = !!props[name]) : (event[name] = props[name]);
+                }
+            }
+            event.initEvent(type, bubbles, true, null, null, null, null, null, null, null, null, null, null, null, null);
+            event.isDefaultPrevented = function() {
+                return this.defaultPrevented;
+            };
+            return event;
+        };
+
+        lang.extend($.fn, {
+            /**
+             * 给节点绑定事件
+             * @param event 事件类型，多事件由空格分隔
+             * @param callback 响应事件的回调函数
+             */
+            bind: function(event, callback) {
+                return this.each(function() {
+                    add(this, event, callback);
+                });
+            },
+            /**
+             * 给节点解绑事件
+             * @param event 事件类型，没有指定则移除所有事件
+             * @param callback 指定的回调函数，没有指定则移除该事件类型的所有绑定
+             */
+            unbind: function(event, callback) {
+                return this.each(function() {
+                    remove(this, event, callback);
+                });
+            },
+            /**
+             * 一次性事件
+             * @param event 事件类型
+             * @param callback 事件回调函数
+             */
+            one: function(event, callback) {
+                return this.each(function(i, element) {
+                    add(this, event, callback, null, function(fn, type) {
+                        return function() {
+                            var result = fn.apply(element, arguments)
+                            remove(element, type, fn); // 解绑
+                            return result;
+                        };
+                    });
+                });
+            },
+            /**
+             * 绑定事件，该事件利用冒泡，仅在当前节点下满足selector选择器和event事件类型时候触发callback
+             * @param selector 选择器
+             * @param event 事件类型
+             * @param callback 回调函数
+             */
+            delegate: function(selector, event, callback) {
+                return this.each(function(i, element) {
+                    add(element, event, callback, selector, function(fn) {
+                        return function(e) {
+                            var evt;
+                            var match = $(e.target).closest(selector, element).get(0); // 指定的事件源节点
+                            if(match) {
+                                evt = $.extend(createProxy(e), {
+                                    currentTarget: match,
+                                    liveFired: element
+                                });
+                                return fn.apply(match, [evt].concat([].slice.call(arguments, 1)));
+                            }
+                        }
+                    });
+                });
+            },
+            /**
+             * 解绑事件
+             * @param selector
+             * @param event
+             * @param callback
+             * @returns {*}
+             */
+            undelegate: function(selector, event, callback) {
+                return this.each(function() {
+                    remove(this, event, callback, selector);
+                });
+            },
+            /**
+             * 在document.body上监听，如果是当前选择器触发则响应事件
+             * @param event
+             * @param callback
+             */
+            live: function(event, callback) {
+                $(document.body).delegate(this.selector, event, callback);
+                return this;
+            },
+            /**
+             * 对live的解绑
+             * @param event
+             * @param callback
+             */
+            die: function(event, callback) {
+                $(document.body).undelegate(this.selector, event, callback);
+                return this;
+            },
+            /**
+             * 没有提供selector或者selector是function时候，给当前节点绑定事件
+             * 如果提供了selector且不是function，则表明是用代理绑定
+             * @param event
+             * @param selector
+             * @param callback
+             */
+            on: function(event, selector, callback) {
+                return !selector || $.isFunction(selector) ? this.bind(event, selector || callback) : this.delegate(selector, event, callback);
+            },
+            /**
+             * 与on相对应，解绑事件
+             * @param event
+             * @param selector
+             * @param callback
+             */
+            off: function(event, selector, callback) {
+                return !selector || $.isFunction(selector) ? this.unbind(event, selector || callback) : this.undelegate(selector, event, callback);
+            },
+            /**
+             * 触发事件
+             * @param event
+             * @param data
+             */
+            trigger: function(event, data) {
+                if(typeof event === 'string' || $.isPlainObject(event)) {
+                    event = Event(event);
+                }
+                fix(event);
+                event.data = data;
+                return this.each(function() {
+                    if('dispatchEvent' in this) {
+                        this.dispatchEvent(event);
+                    }
+                });
+            }
+        });
+
+        /**
+         * 常规DOM事件的快速写法支持
+         */
+        lang.each(('focusin focusout load resize scroll unload click dblclick ' + 'mousedown mouseup mousemove mouseover mouseout mouseenter mouseleave ' + 'change select keydown keypress keyup error').split(' '), function(event) {
+            $.fn[event] = function(callback) {
+                return callback ? this.bind(event, callback) : this.trigger(event);
+            };
+        });
+        lang.each(['focus', 'blur'], function(name) {
+            $.fn[name] = function(callback) {
+                if(callback) {
+                    this.bind(name, callback);
+                } else {
+                    this.each(function() {
+                        try {
+                            this[name]();
+                        } catch(e) {}
+                    });
+                }
+                return this;
+            };
+        });
+    })();
+
+    return {
+
+    };
 });
