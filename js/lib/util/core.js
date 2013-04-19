@@ -1,3 +1,8 @@
+/**
+ * author: lidian.sw@gmail.com
+ * date: 2013.04.15
+ */
+
 define(function(require, exports, module) {
 
     var lang = require('./lang');
