@@ -1,8 +1,3 @@
-/**
- * author: lidian.sw@gmail.com
- * date: 2013.04.15
- */
-
 define(function(require, exports, module) {
 
     var lang = require('./lang');
@@ -54,7 +49,7 @@ define(function(require, exports, module) {
 
     //命名空间
     var core = {};
-    module.exports = core;
+
     function type(obj) {
         return obj == null ? String(obj) : class2type[toString.call(obj)] || "object";
     }
@@ -89,7 +84,7 @@ define(function(require, exports, module) {
     }
 
     function funcArg(context, arg, idx, payload) {
-        return lang.isFunction(arg) ? arg.call(context, idx, payload) : arg;
+        return $.isFunction(arg) ? arg.call(context, idx, payload) : arg;
     }
 
     function setAttribute(node, name, value) {
@@ -222,7 +217,7 @@ define(function(require, exports, module) {
         //如果未传参，返回一个空的集合
         if(!selector) {
             return core.Z();
-        } else if(lang.isFunction(selector)) {
+        } else if($.isFunction(selector)) {
             //如果是一个方法，在dom ready后运行
             return $(document).ready(selector);
         } else if(core.isZ(selector)) {
@@ -231,7 +226,7 @@ define(function(require, exports, module) {
         } else {
             var dom;
             //如果给定的selector是一个数组，格式化
-            if(lang.isArray(selector)) {
+            if($.isArray(selector)) {
                 dom = compact(selector);
             } else if(isObject(selector)) {
                 //包裹节点，如果是一个普通的对象，复制
@@ -259,33 +254,7 @@ define(function(require, exports, module) {
     $ = function(selector, context) {
         return core.init(selector, context);
     };
-
-    function extend(target, source, deep) {
-        for(var key in source) {
-            if(deep && (isPlainObject(source[key]) || lang.isArray(source[key]))) {
-                if(isPlainObject(source[key]) && !isPlainObject(target[key])) {
-                    target[key] = {};
-                }
-                if(isArray(source[key]) && !isArray(target[key]))
-                    target[key] = [];
-                extend(target[key], source[key], deep);
-            } else if(source[key] !== undefined) {
-                target[key] = source[key];
-            }
-        }
-    }
-
-    // Copy all but undefined properties from one or more
-    // objects to the `target` object.
-    $.extend = function(target) {
-        var deep, args = slice.call(arguments, 1);
-        if(typeof target == 'boolean') {
-            deep = target;
-            target = args.shift();
-        }
-        args.forEach(function(arg) { extend(target, arg, deep); });
-        return target;
-    };
+    lang.extend($, lang);
 
     /**
      * `core.qsa` is mobi's CSS selector implementation which
@@ -317,9 +286,7 @@ define(function(require, exports, module) {
     }
 
     $.type = type;
-    $.isFunction = lang.isFunction;
     $.isWindow = isWindow;
-    $.isArray = lang.isArray;
     $.isPlainObject = isPlainObject;
 
     // plugin compatibility
@@ -328,7 +295,6 @@ define(function(require, exports, module) {
     $.expr = { };
 
     $.camelCase = camelize;
-    $.trim = function(str) { return str.trim(); };
 
     $.map = function(elements, callback) {
         var value, values = [], i, key;
@@ -359,20 +325,9 @@ define(function(require, exports, module) {
     };
 
     $.each = function(elements, callback) {
-        var i, key;
-        if(likeArray(elements)) {
-            for(i = 0; i < elements.length; i++) {
-                if(callback.call(elements[i], i, elements[i]) === false) {
-                    return elements;
-                }
-            }
-        } else {
-            for(key in elements) {
-                if(callback.call(elements[key], key, elements[key]) === false) {
-                    return elements;
-                }
-            }
-        }
+        lang.each(elements, function(val, key) {
+            callback.call(val, key, val);
+        });
         return elements;
     };
 
@@ -416,7 +371,7 @@ define(function(require, exports, module) {
             return this.length;
         },
         filter: function(selector) {
-            if(lang.isFunction(selector)) {
+            if($.isFunction(selector)) {
                 return this.not(this.not(selector));
             }
             return $(filter.call(this, function(element) {
@@ -499,9 +454,9 @@ define(function(require, exports, module) {
             if(coordinates) {
                 return this.each(function(index) {
                     var $this = $(this), coords = funcArg(this, coordinates, index, $this.offset()), parentOffset = $this.offsetParent().offset(), props = {
-                            top: coords.top - parentOffset.top,
-                            left: coords.left - parentOffset.left
-                        };
+                        top: coords.top - parentOffset.top,
+                        left: coords.left - parentOffset.left
+                    };
 
                     if($this.css('position') == 'static') {
                         props['position'] = 'relative';
@@ -641,7 +596,7 @@ define(function(require, exports, module) {
             return this.before(newContent).remove();
         },
         wrap: function(structure) {
-            var func = lang.isFunction(structure);
+            var func = $.isFunction(structure);
             if(this[0] && !func) {
                 var dom = $(structure).get(0), clone = dom.parentNode || this.length > 1;
             }
@@ -661,7 +616,7 @@ define(function(require, exports, module) {
             return this;
         },
         wrapInner: function(structure) {
-            var func = lang.isFunction(structure);
+            var func = $.isFunction(structure);
             return this.each(function(index) {
                 var self = $(this), contents = self.contents(), dom = func ? structure.call(this, index) : structure;
                 contents.length ? contents.wrapAll(dom) : self.append(dom);
@@ -678,14 +633,14 @@ define(function(require, exports, module) {
         },
         not: function(selector) {
             var nodes = [];
-            if(lang.isFunction(selector) && selector.call !== undefined) {
+            if($.isFunction(selector) && selector.call !== undefined) {
                 this.each(function(idx) {
                     if(!selector.call(this, idx)) {
                         nodes.push(this);
                     }
                 });
             } else {
-                var excludes = typeof selector == 'string' ? this.filter(selector) : (likeArray(selector) && lang.isFunction(selector.item)) ? slice.call(selector) : $(selector);
+                var excludes = typeof selector == 'string' ? this.filter(selector) : (likeArray(selector) && $.isFunction(selector.item)) ? slice.call(selector) : $(selector);
                 this.forEach(function(el) {
                     if(excludes.indexOf(el) < 0) {
                         nodes.push(el);
@@ -758,10 +713,9 @@ define(function(require, exports, module) {
     };
 
     // for now
-    $.fn.detach = $.fn.remove
+    $.fn.detach = $.fn.remove;
 
-        // Generate the `width` and `height` functions
-    ;
+    // Generate the `width` and `height` functions
     ['width', 'height'].forEach(function(dimension) {
         $.fn[dimension] = function(value) {
             var offset, el = this[0], Dimension = dimension.replace(/./, function(m) { return m[0].toUpperCase(); });
@@ -791,9 +745,9 @@ define(function(require, exports, module) {
         $.fn[operator] = function() {
             // arguments can be nodes, arrays of nodes, mobi objects and HTML strings
             var argType, nodes = $.map(arguments, function(arg) {
-                    argType = type(arg);
-                    return argType == "object" || argType == "array" || arg == null ? arg : core.fragment(arg);
-                }), parent, copyByClone = this.length > 1;
+                argType = type(arg);
+                return argType == "object" || argType == "array" || arg == null ? arg : core.fragment(arg);
+            }), parent, copyByClone = this.length > 1;
             if(nodes.length < 1) {
                 return this;
             }
