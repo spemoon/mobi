@@ -271,6 +271,7 @@ define(function(require, exports, module) {
             };
             return event;
         };
+        $.Event = Event;
 
         lang.extend($.fn, {
             /**
