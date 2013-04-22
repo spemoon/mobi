@@ -7,6 +7,7 @@
 define(function(require, exports, module) {
 
     var $ = require('./core');
+    var event = require('./event');
 
     var touch = {};
     var touchTimeout, tapTimeout, swipeTimeout,

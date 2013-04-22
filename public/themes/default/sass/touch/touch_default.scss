@@ -1,0 +1,15 @@
+@import '../reset.scss';
+@import '../base.scss';
+@import '../list.scss';
+@import 'compass/css3';
+
+.delete{
+    display: none;
+    float: right;
+    padding: 1px 10px;
+    background: $pink;
+    color: white;
+    &:hover{
+        text-decoration: none;
+    }
+}

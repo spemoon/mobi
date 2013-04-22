@@ -1,0 +1,18 @@
+@import 'compass/css3';
+.list-1{
+    li{
+        padding: 10px;
+        font-size: 14px;
+        line-height: 24px;
+        @include background(linear-gradient(#fff, #f1f1f1));
+        border-bottom: 1px solid #ccc;
+        border-top: 1px solid #fff;
+        .link{
+            color: #333;
+            display: block;
+            &:hover{
+                text-decoration: none;
+            }
+        }
+    }
+}
