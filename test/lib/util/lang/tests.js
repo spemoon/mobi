@@ -8,25 +8,21 @@ seajs.use(['../../../../js/lib/util/lang'], function(lang) {
 
     module('类型判断');
     var multiTypeData = {
-        undefined: [(function() {})()],
-        null: null,
-        number: [-1, 0, 1, 1 - 's', new Number(1)],
-        string: ['s', '0', '1', '', ' ', new String(''), new String('s')],
-        boolean: [true, false, new Boolean(true), new Boolean(false)],
+        'undefined': [(function() {})()],
+        'null': null,
+        number: [-1, 0, 1, 1 - 's'],
+        string: ['s', '0', '1', '', ' '],
+        boolean: [true, false],
         object: [
             {},
             {name: 1},
-            window,
-            new Object()
+            window
         ],
         array: [
             [],
-            [1, 2, 3],
-            new Array(),
-            new Array(3),
-            new Array(1, 2, 3)
+            [1, 2, 3]
         ],
-        function: [function() {}, new Function()],
+        function: [(function() {})],
         regexp: [/\s+/g, new RegExp('\s+', 'g')]
     };
     test('isFunction', function() {
@@ -217,7 +213,7 @@ seajs.use(['../../../../js/lib/util/lang'], function(lang) {
         equal(lang.result(obj, 'age'), 22);
         equal(lang.result(obj, 'fn', 3, 4), 7);
         equal(lang.result(null), null);
-        equal(lang.result('obj', 'name'), obj.undefined);
+        equal(lang.result('obj', 'name'), obj['undefined']);
     });
 
     module('数组增强');
@@ -341,7 +337,7 @@ seajs.use(['../../../../js/lib/util/lang'], function(lang) {
     });
     test('escape', function() {
         var str1 = 'tom&jerry <a href="http://www.baidu.com/?key=hello&time=123456" target="_blank">"你好+朋友\'</a>';
-        var str2 = 'tom&amp;jerry &lt;a href=&quot;http:&#x2F;&#x2F;www.baidu.com&#x2F;?key=hello&amp;time=123456&quot; target=&quot;_blank&quot;&gt;&quot;你好+朋友&#x27;&lt;&#x2F;a&gt;'
+        var str2 = 'tom&amp;jerry &lt;a href=&quot;http:&#x2F;&#x2F;www.baidu.com&#x2F;?key=hello&amp;time=123456&quot; target=&quot;_blank&quot;&gt;&quot;你好+朋友&#x27;&lt;&#x2F;a&gt;';
         equal(str1, lang.unescape(str2));
         equal(str2, lang.escape(str1));
     });

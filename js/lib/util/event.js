@@ -45,7 +45,7 @@ define(function(require, exports, module) {
      * @returns {e: string, ns: string}
      */
     function parse(event) {
-        var parts = ('' + event).split('.')
+        var parts = ('' + event).split('.');
         return {
             e: parts[0],
             ns: parts.slice(1).sort().join(' ')
@@ -59,7 +59,7 @@ define(function(require, exports, module) {
      * @returns {RegExp}
      */
     function matcherFor(ns) {
-        return new RegExp('(?:^| )' + ns.replace(' ', ' .* ?') + '(?: |$)')
+        return new RegExp('(?:^| )' + ns.replace(' ', ' .* ?') + '(?: |$)');
     }
 
     /**
@@ -79,7 +79,7 @@ define(function(require, exports, module) {
             // handler.e == event.e 事件类型相同
             // matcher.test(handle.ns) 事件命名空间相同
             // zid(handler.fn) 给handler.fn增加一个zid属性（第一次没有，后面直接获取），zid(fn) 如果 handler.fn === fn 则必然是获取zid
-            return handler && (!event.e || handler.e == event.e) && (!event.ns || matcher.test(handler.ns)) && (!fn || zid(handler.fn) === zid(fn)) && (!selector || handler.sel == selector)
+            return handler && (!event.e || handler.e === event.e) && (!event.ns || matcher.test(handler.ns)) && (!fn || zid(handler.fn) === zid(fn)) && (!selector || handler.sel === selector);
         });
     }
 
@@ -120,7 +120,7 @@ define(function(require, exports, module) {
      * @returns {*|boolean|boolean}
      */
     function eventCapture(handler, captureSetting) {
-        return handler.del && (handler.e == 'focus' || handler.e == 'blur') || !!captureSetting
+        return handler.del && (handler.e === 'focus' || handler.e === 'blur') || !!captureSetting;
     }
 
     /**
@@ -151,7 +151,7 @@ define(function(require, exports, module) {
                     if(!related || (related !== this && !$.contains(this, related))) { // 离开了节点，则直接执行
                         return handler.fn.apply(this, arguments);
                     }
-                }
+                };
             }
             handler.del = getDelegate && getDelegate(fn, event); // 委托
             var callback = handler.del || fn; // 有提供委托用委托，没有用事件回调处理
@@ -224,7 +224,7 @@ define(function(require, exports, module) {
                 proxy[name] = function() {
                     this[predicate] = returnTrue;
                     return event[name].apply(event, arguments);
-                }
+                };
                 proxy[predicate] = returnFalse;
             });
             return proxy;
@@ -241,7 +241,7 @@ define(function(require, exports, module) {
                 event.preventDefault = function() {
                     this.defaultPrevented = true;
                     prevent.call(this);
-                }
+                };
             }
         };
 
@@ -254,7 +254,7 @@ define(function(require, exports, module) {
          * @returns {Event}
          */
         var Event = function(type, props) {
-            if(typeof type != 'string') {
+            if(typeof type !== 'string') {
                 props = type;
                 type = props.type;
             }
@@ -262,7 +262,11 @@ define(function(require, exports, module) {
             bubbles = true;
             if(props) {
                 for(var name in props) {
-                    (name == 'bubbles') ? (bubbles = !!props[name]) : (event[name] = props[name]);
+                    if(name === 'bubbles') {
+                        bubbles = !!props[name];
+                    } else {
+                        event[name] = props[name];
+                    }
                 }
             }
             event.initEvent(type, bubbles, true, null, null, null, null, null, null, null, null, null, null, null, null);
@@ -303,7 +307,7 @@ define(function(require, exports, module) {
                 return this.each(function(i, element) {
                     add(this, event, callback, null, function(fn, type) {
                         return function() {
-                            var result = fn.apply(element, arguments)
+                            var result = fn.apply(element, arguments);
                             remove(element, type, fn); // 解绑
                             return result;
                         };
@@ -329,7 +333,7 @@ define(function(require, exports, module) {
                                 });
                                 return fn.apply(match, [evt].concat([].slice.call(arguments, 1)));
                             }
-                        }
+                        };
                     });
                 });
             },

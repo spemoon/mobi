@@ -400,12 +400,12 @@ define(function(require, exports, module) {
             if(typeof data === 'string') {
                 data = ns.trim(data);
                 if(data) {
-                    if(rvalidchars.test(data.replace(rvalidescape, "@").replace(rvalidtokens, "]").replace(rvalidbraces, ""))) {
-                        return (new Function("return " + data))();
+                    if(rvalidchars.test(data.replace(rvalidescape, '@').replace(rvalidtokens, ']').replace(rvalidbraces, ''))) {
+                        return (new Function('return ' + data))();
                     }
                 }
             }
-            throw new Error("Invalid JSON: " + data);
+            throw new Error('Invalid JSON: ' + data);
         };
     })();
 });
