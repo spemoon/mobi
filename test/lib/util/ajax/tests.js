@@ -136,10 +136,8 @@ seajs.use(['../../../../js/lib/util/ajax', '../../../../js/lib/util/core'], func
         $.ajaxSetting({
             global: true
         });
-        asyncTest('event', 2, function() {
-            $(document).bind('ajaxStart', function(e) {
-                cache.start++;
-            }).bind('ajaxBeforeSend', function(e) {
+        asyncTest('event', 1, function() {
+            $(document).bind('ajaxBeforeSend', function(e) {
                 var flag = cache.send < 3;
                 return flag;
             }).bind('ajaxSend', function(e) {
@@ -150,50 +148,36 @@ seajs.use(['../../../../js/lib/util/ajax', '../../../../js/lib/util/core'], func
                 cache.error++;
             }).bind('ajaxComplete', function(e) {
                 cache.complete++;
-            }).bind('ajaxStop', function(e) {
-                cache.stop++;
             });
-            $.ajax({ // start++,send++,success++,complete++
-                url: './data.json'
-            });
-            $.ajax({ // send++,error++,complete++
-                url: './error.php'
-            });
-            $.ajax({ // send++,success++,complete++,stop++
+            $.ajax({ // send++,success++,complete++
                 url: './data.json',
                 complete: function() {
-//                    deepEqual(cache, {
-//                        send: 3,
-//                        success: 2,
-//                        error: 1,
-//                        complete: 2
-//                    });
-                    ok(true);
-                    ok(true);
-                    start();
-                }
-            });
-            $.ajax({ //
-                url: './data.json',
-                complete: function() {
-                    ok(true);
-                    start();
+                    $.ajax({ // send++,error++,complete++
+                        url: './error.php',
+                        complete: function() {
+                            $.ajax({ // send++,success++,complete++,但complete在此回调中还没有触发
+                                url: './data.json',
+                                complete: function() {
+                                    $.ajax({ // 不会发生
+                                        url: './data.json',
+                                        complete: function() {
+                                            ok(true);
+                                            start();
+                                        }
+                                    });
+                                    deepEqual(cache, {
+                                        send: 3,
+                                        success: 2,
+                                        error: 1,
+                                        complete: 2
+                                    });
+                                    start();
+                                }
+                            });
+                        }
+                    });
                 }
             });
         });
-
-        /*
-         test('error', function() {
-         ok(true);
-         });
-         test('parseerror', function() {
-         ok(true);
-         });
-         test('JSONP', function() {
-         ok(true);
-         });
-         test('错误统一处理', function() {
-         ok(true);
-         });*/
     });
 });
