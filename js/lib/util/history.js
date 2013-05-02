@@ -2,43 +2,79 @@ define(function(require, exports, module) {
     var $ = require('./core');
 
     var optionalParam = /\((.*?)\)/g;
-    var namedParam = /(\(\?)?:\w+/g;
-    var splatParam = /\*\w+/g;
-    var escapeRegExp = /[\-{}\[\]+?.,\\\^$|#\s]/g;
+    var namedParam = /(\(\?)?:\w+/g; // :通配符
+    var splatParam = /\*\w+/g; // *号通配符
+    var escapeRegExp = /[\-{}\[\]+?.,\\\^$|#\s]/g; // 转义字符
     var defaultRouter = 'defaultRouter'; // 默认key
     var defaultHash; // 默认触发的hash，可以是一个字符串，或者是一个function
 
     var helper = {
+        /**
+         * 将路由转化为正则表达式
+         * @param route
+         */
         routeToReg: function(route) {
             route = route.replace(escapeRegExp, '\\$&').replace(optionalParam, '(?:$1)?').replace(namedParam,function(match, optional) {
                 return optional ? match : '([^\/]+)';
             }).replace(splatParam, '(.*?)');
             return new RegExp('^' + route + '$');
         },
+        /**
+         * 获取当前的hash
+         * @returns {string}
+         */
         getHash: function() {
             return location.hash.replace(/^#/, '');
         },
-        match: function(hash, cache) {
-            if(hash && hash !== defaultRouter) {
-                for(var key in cache) {
-                    var item = cache[key];
-                    var match = hash.match(item.reg);
-                    if(match) {
-                        item.action.apply(null, $.isArray(match) ? match.slice(1) : []);
-                        break;
-                    }
+        search: function(hash, cache) {
+            var match;
+            for(var key in cache) {
+                var item = cache[key];
+                match = hash.match(item.reg);
+                if(match) {
+                    return {
+                        action: item.action,
+                        params: $.isArray(match) ? match.slice(1) : []
+                    };
                 }
+            }
+        },
+        /**
+         * 获取路由对应的处理函数
+         * @param hash
+         * @param cache
+         */
+        fetch: function(hash, cache) {
+            var result = {
+                action: null,
+                params: []
+            };
+            hash = $.trim(hash);
+            if(hash && hash !== defaultRouter) {
+                result = helper.search(hash, cache);
             } else {
                 if(defaultHash) {
-                    var fn;
                     if(typeof defaultHash === 'string') {
-                        fn = cache[defaultHash].action;
+                        result = helper.search(hash, cache);
                     } else if(typeof defaultHash === 'function') {
-                        fn = defaultHash;
+                        result.action = defaultHash;
                     }
-                    if(fn) {
-                        fn(cache);
-                    }
+                }
+            }
+            return result;
+        },
+        /**
+         * 找到对应hash的处理函数，并执行
+         * @param hash
+         * @param cache
+         */
+        match: function(hash, cache) {
+            var fetch = helper.fetch(hash, cache);
+            if(fetch.action) {
+                fetch.action.apply(null, fetch.params);
+                if(fetch.action.callback) {
+                    fetch.action.callback();
+                    delete fetch.action.callback;
                 }
             }
         }
@@ -50,10 +86,36 @@ define(function(require, exports, module) {
     var cache = {};
 
     var r = {
+        /**
+         * 获取当前的hash
+         */
         get: helper.getHash,
-        trigger: function(hash) {
-            location.hash = hash;
+        /**
+         * 将当前的hash清空
+         */
+        empty: function() {
+            location.hash = '';
         },
+        /**
+         * 触发某个路由，执行回调函数
+         * @param hash
+         * @param callback 执行完路由后的回调函数
+         */
+        trigger: function(hash, callback) {
+            location.hash = hash;
+            if($.isFunction(callback)) {
+                var fetch = helper.fetch(hash, cache);
+                if(fetch.action) {
+                    fetch.action.callback = callback;
+                }
+            }
+        },
+        /**
+         * 设定路由监听
+         * @param obj 键值对，key是路由表，值是路由对应的动作函数。路由表支持：
+         *          :通配符，例如： user/:id 可以匹配 user/2   user/33
+         *          *通配符，例如： *post 可以匹配 userpost    delpost
+         */
         listen: function(obj) {
             (function() {
                 for(var key in obj) {
