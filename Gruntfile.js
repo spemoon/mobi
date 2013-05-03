@@ -24,6 +24,7 @@ module.exports = function(grunt) {
                 plusplus: false, // 允许使用++和--
                 latedef: true, // 局部变量必须先声明再使用
                 undef: true, // 禁止使用未声明的变量
+                proto: true, // 允许使用 __proto__
                 browser: true, // 浏览器环境，支持除了alert/console外的全局变量
                 globals: { // 排除的全局变量
                     seajs: true,
@@ -34,21 +35,29 @@ module.exports = function(grunt) {
                 devel: false, // 不开启alert/console全局变量支持
                 unused: false, // 允许变量声明后不使用，常见于一些函数调用上的参数没有使用
                 quotmark: 'single', // 字符串引号必须使用单引号
-                sub: false, // 允许使用[]来访问对象属性
-                boss: false, // 允许if/while/for中使用赋值语句
+                sub: true, // 允许使用[]来访问对象属性
+                boss: true, // 允许if/while/for中使用赋值语句
                 immed: false, // 允许使用匿名函数并立即执行
                 forin: false, // 允许for in中不强制hasOwnProperty检测
                 bitwise: false, // 允许位运算
                 es5: true, // 允许使用ES5特性
                 evil: false // 不允许使用eval和new Function
             },
-            useDefault: ['Gruntfile.js', 'js/**/*.js', '!js/lib/util/lang.js', '!js/lib/util/ajax.js'],
+            useDefault: ['Gruntfile.js', 'js/**/*.js', '!js/lib/util/lang.js', '!js/lib/util/ajax.js', '!js/lib/util/core.js', '!js/lib/util/touch.js', '!js/lib/util/scroll.js', '!js/lib/util/touch/touch.js'],
             useEval: { // 允许使用eval或者new Function
                 options: {
                     evil: true
                 },
                 files: {
                     src: ['js/lib/util/lang.js', 'js/lib/util/ajax.js']
+                }
+            },
+            testUnit: {
+                options: {
+                    undef: false // 允许使用未声明的变量
+                },
+                files: {
+                    src: ['test/**/*.js']
                 }
             }
         },
