@@ -108,5 +108,5 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-qunit');
     grunt.loadNpmTasks('grunt-contrib-watch');
 
-    grunt.registerTask('default', ['qunit', 'watch']);
+    grunt.registerTask('default', ['jshint', 'qunit', 'watch']);
 }
