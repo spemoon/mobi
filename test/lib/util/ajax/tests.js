@@ -52,13 +52,13 @@ seajs.use(['../../../../js/lib/util/ajax', '../../../../js/lib/util/core'], func
                     start();
                 }
             });
-         });
+        });
         asyncTest('返回script', function() {
             $.ajax({
                 url: './data.script',
                 dataType: 'script',
                 success: function(data) {
-                    ok($.isFunction(add_a_b));
+                    ok($.isFunction(addAB));
                     start();
                 }
             });
@@ -137,18 +137,18 @@ seajs.use(['../../../../js/lib/util/ajax', '../../../../js/lib/util/core'], func
             global: true
         });
         asyncTest('event', 1, function() {
-            $(document).bind('ajaxBeforeSend', function(e) {
+            $(document).bind('ajaxBeforeSend',function(e) {
                 var flag = cache.send < 3;
                 return flag;
-            }).bind('ajaxSend', function(e) {
-                cache.send++;
-            }).bind('ajaxSuccess', function(e) {
-                cache.success++;
-            }).bind('ajaxError', function(e) {
-                cache.error++;
-            }).bind('ajaxComplete', function(e) {
-                cache.complete++;
-            });
+            }).bind('ajaxSend',function(e) {
+                    cache.send++;
+                }).bind('ajaxSuccess',function(e) {
+                    cache.success++;
+                }).bind('ajaxError',function(e) {
+                    cache.error++;
+                }).bind('ajaxComplete', function(e) {
+                    cache.complete++;
+                });
             $.ajax({ // send++,success++,complete++
                 url: './data.json',
                 complete: function() {
