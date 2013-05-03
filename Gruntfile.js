@@ -25,6 +25,7 @@ module.exports = function(grunt) {
                 latedef: true, // 局部变量必须先声明再使用
                 undef: true, // 禁止使用未声明的变量
                 proto: true, // 允许使用 __proto__
+                loopfunc: true, // 允许在循环中使用function
                 browser: true, // 浏览器环境，支持除了alert/console外的全局变量
                 globals: { // 排除的全局变量
                     seajs: true,
