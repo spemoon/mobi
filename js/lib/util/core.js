@@ -839,6 +839,8 @@ define(function(require, exports, module) {
                     } else if(!parent) {
                         return $(node).remove();
                     }
+
+                    traverseNode(parent.insertBefore(node, target), function(el) {});
                 });
             });
         };
