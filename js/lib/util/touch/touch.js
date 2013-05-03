@@ -4,8 +4,9 @@
  * @email:   @lidian.sw@gmail.com
  */
 
- ;(function($) {
+define(function(require, exports, module) {
 
+    var $ = require('./core');
 	/**
 	 * 内部变量初始化
 	 * @touchDataObj    记录节点在touch事件中数据的变化
@@ -27,12 +28,12 @@
 				speed:  {x:0, y:0},     // 沿x轴和y轴运动的速度
 				flick:  {x:0, y:0}      // +1/-1 标示 left/right up/down
 			}
-		},
-		touchIniObjs = 0;  // 计数初始化touch的个数
-		minDistance  = 5;  // 滑动的最小计算距离，单位px
-		flickHold    = 0.7;   // 判定是否是轻触屏幕
-		browserSupport = false; // 默认不支持CSS3，自动判断
-		debug        = false; // debug开关
+		};
+	var touchIniObjs = 0;  // 计数初始化touch的个数
+	var minDistance  = 5;  // 滑动的最小计算距离，单位px
+	var flickHold    = 0.7;   // 判定是否是轻触屏幕
+	var browserSupport = false; // 默认不支持CSS3，自动判断
+	var debug        = false; // debug开关
 
 	/**
 	 * 辅助函数
@@ -109,10 +110,10 @@
 		 * @return {[type]}           [description]
 		 */
 		getSegmentPx: function(el, segmentPx){
-			if(!parseInt(segmentPx)){
+			if(!parseInt(segmentPx, 10)){
 				var segments  = el.data('segments');
 				var direction = helper.getDirection(el, el.data('direction'));
-				segmentPx = (direction == 'y') ? el.height() / segments : el.width() / segments;
+				segmentPx = (direction === 'y') ? el.height() / segments : el.width() / segments;
 			}
 			return segmentPx;
 		},
@@ -125,8 +126,8 @@
 			var pageX, pageY;
 
 			//Android 跟 iOS的 x,y取法不太一样
-			pageX = (typeof e.touches[0].pageX != 'undefined') ? e.touches[0].pageX : e.pageX;
-			pageY = (typeof e.touches[0].pageY != 'undefined') ? e.touches[0].pageY : e.pageY;
+			pageX = (typeof e.touches[0].pageX !== 'undefined') ? e.touches[0].pageX : e.pageX;
+			pageY = (typeof e.touches[0].pageY !== 'undefined') ? e.touches[0].pageY : e.pageY;
 
 			touchData               = touchDataObj;
 			touchData.start         = {x: pageX, y: pageY, time: e.timeStamp};
@@ -145,8 +146,8 @@
 			var pageX, pageY;
 
 			//Android 跟 iOS的 x,y取法不太一样
-			pageX = (typeof e.touches[0].pageX != 'undefined') ? e.touches[0].pageX : e.pageX;
-			pageY = (typeof e.touches[0].pageY != 'undefined') ? e.touches[0].pageY : e.pageY;
+			pageX = (typeof e.touches[0].pageX !== 'undefined') ? e.touches[0].pageX : e.pageX;
+			pageY = (typeof e.touches[0].pageY !== 'undefined') ? e.touches[0].pageY : e.pageY;
 
 			var dirX;
 			var dirY;
@@ -219,8 +220,8 @@
 			var len     = vendors.length;
 
 			return function(prop) {
-				if ( prop in div.style ) return true;
-					prop = prop.replace(/^[a-z]/, function(val) {
+				if ( prop in div.style ) {return true;}
+				prop = prop.replace(/^[a-z]/, function(val) {
 					return val.toUpperCase();
 				});
 				while(len--) {
@@ -247,7 +248,7 @@
 	 * @return {[type]}
 	 */
 	var touch = function(params) {
-		this.node           = typeof params.node == 'string' ? document.getElementById(params.node) : params.node;
+		this.node           = typeof params.node === 'string' ? document.getElementById(params.node) : params.node;
 		this.debugEnabled   = params.debugEnabled || false;
 		this.segments       = params.segments || 5;
 		this.direction      = params.direction || 'auto';
@@ -280,10 +281,10 @@
                     this.bind();
                     this.create();
                     if(!helper.browserSupport('transform')){
-							browserSupport = true;
+						browserSupport = true;
 					}
-					if(parseInt(this.flickHold)){
-						flickHold = parseInt(this.flickHold);
+					if(parseInt(this.flickHold, 10)){
+						flickHold = parseInt(this.flickHold, 10);
 					}
 					if (debug || this.debugEnabled) {
 						helper._debugger();
@@ -329,7 +330,7 @@
 					el.data('id', 'touch-' + touchIniObjs);
 				}
 				this.scrollToSegment();
-				if (typeof callback == 'function') {
+				if (typeof callback === 'function') {
 					callback.call(this, touchIniObjs);
 				}
 			},
@@ -347,7 +348,7 @@
 
 				el.data('anchor', anchor);
 
-				if (typeof callback == 'function') {
+				if (typeof callback === 'function') {
 					callback.call(this, touchData);
 				}
 			},
@@ -360,11 +361,11 @@
 				var el = $(this.node);
 				var style;
 				var direction = el.data('direction');
-				var anchor = parseInt(el.data('anchor'));
+				var anchor = parseInt(el.data('anchor'), 10);
 				var pos = anchor + touchData.update.dist[direction];
 
 				if (browserSupport) { //不支持CSS3处理
-					if (direction == 'y') {
+					if (direction === 'y') {
 						el.css({
 							'top': pos
 						});
@@ -374,11 +375,11 @@
 						});
 					}
 				} else {
-					style = (direction == 'y') ? '(0,'+pos+'px,0)' : '('+pos+'px,0,0)';
+					style = (direction === 'y') ? '(0,'+pos+'px,0)' : '('+pos+'px,0,0)';
 
-					if(typeof document.getElementById(el.attr('id')).style.webkitTransform != 'undefined') {
+					if(typeof document.getElementById(el.attr('id')).style.webkitTransform !== 'undefined') {
 						document.getElementById(el.attr('id')).style.webkitTransform = 'translate3d'+style;
-					} else if (typeof document.getElementById(el.attr('id')).style.mozTransform != 'undefined') {
+					} else if (typeof document.getElementById(el.attr('id')).style.mozTransform !== 'undefined') {
 						document.getElementById(el.attr('id')).style.mozTransform = 'translate3d'+style;
 					} else {
 						document.getElementById(el.attr('id')).style.transform = 'translate3d'+style;
@@ -387,7 +388,7 @@
 
 				el.data('pos', pos);
 
-				if (typeof callback == 'function') {
+				if (typeof callback === 'function') {
 					callback.call(this, touchData);
 				}
 			},
@@ -399,28 +400,28 @@
 			end: function(callback){
 				var el        = $(this.node);
 				var direction = el.data('direction');
-				var segment   = parseInt(el.data('segment'));
-				var segments  = parseInt(el.data('segments'));
-				var segmentPx = parseInt(el.data('segmentPx'));
-				var anchor    = parseInt(el.data('anchor'));
-				var pos       = parseInt(el.data('pos'));
+				var segment   = parseInt(el.data('segment'), 10);
+				var segments  = parseInt(el.data('segments'), 10);
+				var segmentPx = parseInt(el.data('segmentPx'), 10);
+				var anchor    = parseInt(el.data('anchor'), 10);
+				var pos       = parseInt(el.data('pos'), 10);
 				var nearestSeg;
 
 				nearestSeg = (pos < 0) ? Math.abs(Math.round( pos / segmentPx )) : 0;
 
-				if (typeof callback == 'function') {
+				if (typeof callback === 'function') {
 					callback.call(this, touchData, segment);
 				}
 
-				if (segment == nearestSeg) {
+				if (segment === nearestSeg) {
 					if (touchData.end.flick[direction]) {
 						this.flick();
 					}
 				}
 
-				if (nearestSeg == (segment + 1)) {
+				if (nearestSeg === (segment + 1)) {
 					this.nextSegment();
-				} else if (nearestSeg == (segment - 1)) {
+				} else if (nearestSeg === (segment - 1)) {
 					this.prevSegment();
 				} else {
 					this.segment(nearestSeg);
@@ -433,15 +434,15 @@
 			 */
 			segment: function (seg) {
 				var el       = $(this.node);
-				var segment  = parseInt(el.data('segment'));
-				var segments = parseInt(el.data('segments'));
-				if (typeof seg != 'undefined') {
+				var segment  = parseInt(el.data('segment'), 10);
+				var segments = parseInt(el.data('segments'), 10);
+				if (typeof seg !== 'undefined') {
 					if (seg >= segments) {
 						seg = segments - 1;
 					} else if (seg < 0) {
 						seg = 0;
 					}
-					if (seg != segment) {
+					if (seg !== segment) {
 						el.data('segment', seg);
 					}
 					this.scrollToSegment();
@@ -455,9 +456,9 @@
 			nextSegment: function(callback){
 				helper._logTouch('nextSegment');
 				var el = $(this.node);
-				var segment = parseInt(el.data('segment')) + 1;
+				var segment = parseInt(el.data('segment'), 10) + 1;
 				this.segment(segment);
-				if (typeof callback == 'function') {
+				if (typeof callback === 'function') {
 					callback.call(this, touchData, segment);
 				}
 			},
@@ -471,7 +472,7 @@
 				var el = $(this.node);
 				var segment = el.data('segment') - 1;
 				this.segment(segment);
-				if (typeof callback == 'function') {
+				if (typeof callback === 'function') {
 					callback.call(this, touchData, segment);
 				}
 			},
@@ -483,11 +484,11 @@
 			scrollToSegment: function(callback) {
 				var el             = $(this.node);
 				var direction      = el.data('direction');
-				var segments       = parseInt(el.data('segments'));
-				var segment        = parseInt(el.data('segment'));
-				var segmentPx      = parseInt(el.data('segmentPx'));
-				var snapSpeed      = parseFloat(el.data('snapSpeed'));
-				var flickSnapSpeed = parseFloat(el.data('flickSnapSpeed'));
+				var segments       = parseInt(el.data('segments'), 10);
+				var segment        = parseInt(el.data('segment'), 10);
+				var segmentPx      = parseInt(el.data('segmentPx'), 10);
+				var snapSpeed      = parseFloat(el.data('snapSpeed'), 10);
+				var flickSnapSpeed = parseFloat(el.data('flickSnapSpeed'), 10);
 				var pos            = -(segment * segmentPx);
 				var easing         = 'ease-out';
 				var style;
@@ -500,16 +501,16 @@
 				el.data('anchor', pos).data('pos', pos).data('segment', segment);
 
 				if (browserSupport) { //浏览器不支持css3
-					if (direction == 'y') {
+					if (direction === 'y') {
 						el.animate({top: pos}, snapSpeed, easing);
 					} else {
 						el.animate({left: pos}, snapSpeed, easing);
 					}
 				} else {
-					style = (direction == 'y') ? '0px, '+pos+'px, 0px' : pos+'px, 0px, 0px';
+					style = (direction === 'y') ? '0px, '+pos+'px, 0px' : pos+'px, 0px, 0px';
 					el.animate({translate3d: style}, snapSpeed, easing);
 				}
-				if (typeof callback == 'function') {
+				if (typeof callback === 'function') {
 					callback.call(this, touchData, segment);
 				}
 			},
@@ -522,46 +523,46 @@
 				helper._logTouch('flick');
 				var el = $(this.node);
 
-				if (touchData.end.flick.x == 1) {
+				if (touchData.end.flick.x === 1) {
 					this.flickRight();
-				} else if (touchData.end.flick.y == -1) {
+				} else if (touchData.end.flick.y === -1) {
 					this.flickLeft();
 				}
 
-				if (touchData.end.flick.y == 1) {
+				if (touchData.end.flick.y === 1) {
 					this.flickDown();
-				} else if (touchData.end.flick.y == -1) {
+				} else if (touchData.end.flick.y === -1) {
 					this.flickUp();
 				}
-				if (typeof callback == 'function') {
+				if (typeof callback === 'function') {
 					callback.call(this, touchData);
 				}
 			},
 			flickRight: function (callback) {
 				helper._logTouch('flickRight');
 				this.prevSegment();
-				if (typeof callback == 'function') {
+				if (typeof callback === 'function') {
 					callback.call(this, touchData);
 				}
 			},
 			flickLeft: function (callback) {
 				helper._logTouch('flickLeft');
 				this.nextSegment();
-				if (typeof callback == 'function') {
+				if (typeof callback === 'function') {
 					callback.call(this, touchData);
 				}
 			},
 			flickDown: function (callback) {
 				helper._logTouch('flickDown');
 				this.prevSegment();
-				if (typeof callback == 'function') {
+				if (typeof callback === 'function') {
 					callback.call(this, touchData);
 				}
 			},
 			flickUp: function (callback) {
 				helper._logTouch('flickUp');
 				this.nextSegment();
-				if (typeof callback == 'function') {
+				if (typeof callback === 'function') {
 					callback.call(this, touchData);
 				}
 			}
@@ -569,5 +570,4 @@
 	})();
 
 	this.touch = touch;
-
- })($);
+});
