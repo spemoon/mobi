@@ -30,8 +30,8 @@ seajs.use(['../../../../js/lib/util/core'], function($) {
     test('init_else', function() {
         ok($('#node'));
         ok($('.node'));
-        ok($("<p>Hello</p>"));
-        ok($("<p />", { text: "Hello", id: "greeting", css: {color: 'darkblue'} }));
+        ok($('<p>Hello</p>'));
+        ok($('<p />', { text: 'Hello', id: 'greeting', css: {color: 'darkblue'} }));
         ok($(nodeArray));
     });
 
@@ -90,16 +90,16 @@ seajs.use(['../../../../js/lib/util/core'], function($) {
     });
 
     test('$.parseJSON', function() {
-        ok($.parseJSON('{"name":"John"}'));
+        ok($.parseJSON('{'name':'John'}'));
     });
 
     test('$.trim', function() {
-        ok($.trim("    hello, how are you?    "));
+        ok($.trim('    hello, how are you?    '));
     });
 
     test('$.type', function() {
-        equal($.type("    hello, how are you?    "), 'string');
-        equal($.type(" "), 'string');
+        equal($.type('    hello, how are you?    '), 'string');
+        equal($.type(' '), 'string');
         equal($.type(new Object), 'object');
         equal($.type({}), 'object');
         equal($.type(1), 'number');
@@ -129,19 +129,19 @@ seajs.use(['../../../../js/lib/util/core'], function($) {
     test('after', function() {
         ok(node.after('<p></p>'));
         ok(node.after($('h2')));
-        ok(node.after(document.createTextNode("Hello")));
+        ok(node.after(document.createTextNode('Hello')));
     });
 
     test('before', function() {
         ok(node.before('<p></p>'));
         ok(node.before($('h2')));
-        ok(node.before(document.createTextNode("Hello")));
+        ok(node.before(document.createTextNode('Hello')));
     });
 
     test('append', function() {
         ok(node.append('<p></p>'));
         ok(node.append($('h2')));
-        ok(node.append(document.createTextNode("Hello")));
+        ok(node.append(document.createTextNode('Hello')));
     });
 
     test('appendTo', function() {
@@ -152,7 +152,7 @@ seajs.use(['../../../../js/lib/util/core'], function($) {
     test('prepend', function() {
         ok(node.prepend('<p></p>'));
         ok(node.prepend($('h2')));
-        ok(node.prepend(document.createTextNode("Hello")));
+        ok(node.prepend(document.createTextNode('Hello')));
     });
 
     test('prependTo', function() {
@@ -201,16 +201,16 @@ seajs.use(['../../../../js/lib/util/core'], function($) {
         if($('.wrap').parent().is('div')) {
             ok($('.wrap').unwrap());
         } else {
-            ok($('.wrap').wrap('<div class="hide"></div>'));
+            ok($('.wrap').wrap('<div class='hide'></div>'));
         }
     });
 
     test('wrapAll', function() {
-        ok($('.inner').wrapAll('<div class="new" />'));
+        ok($('.inner').wrapAll('<div class='new' />'));
     });
 
     test('wrapInner', function() {
-        ok($('.inner').wrapInner('<div class="new" />'));
+        ok($('.inner').wrapInner('<div class='new' />'));
     });
 
     module('DOM操作——查找操作');
@@ -294,7 +294,7 @@ seajs.use(['../../../../js/lib/util/core'], function($) {
     });
 
     test('is', function() {
-        ok($("input[type='checkbox']").parent().is("form"));
+        ok($('input[type='checkbox']').parent().is('form'));
     });
 
     test('not', function() {
@@ -326,27 +326,27 @@ seajs.use(['../../../../js/lib/util/core'], function($) {
     });
 
     test('prop', function() {
-        ok($("#check1").prop("checked"));
-        ok(!$("#check2").prop("checked"));
-        ok($("input[type='checkbox']").prop("type", function(index, oldvalue) {
-            // console.log(index+"|"+oldvalue);
+        ok($('#check1').prop('checked'));
+        ok(!$('#check2').prop('checked'));
+        ok($('input[type='checkbox']').prop('type', function(index, oldvalue) {
+            // console.log(index+'|'+oldvalue);
         }));
     });
 
     test('val', function() {
-        ok($("#text").val(''));
-        equal($("#text").val(), '');
-        ok($("#text").val("checked"));
-        ok($("#text").val(function(index, value) {
+        ok($('#text').val(''));
+        equal($('#text').val(), '');
+        ok($('#text').val('checked'));
+        ok($('#text').val(function(index, value) {
             return value;
         }));
     });
 
     module('DOM操作——样式操作');
     test('css', function() {
-        ok($("#text").css('background-color'));
-        ok($("#text").css(["width", "height", "color", "background-color"]));
-        ok($("#text").css('width', function(index) {
+        ok($('#text').css('background-color'));
+        ok($('#text').css(['width', 'height', 'color', 'background-color']));
+        ok($('#text').css('width', function(index) {
             return index * 50;
         }));
     });
