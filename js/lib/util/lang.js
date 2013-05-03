@@ -367,7 +367,7 @@ define(function(require, exports, module) {
         '<': '&lt;',
         '>': '&gt;',
         '"': '&quot;',
-        "'": '&#x27;',
+        '\'': '&#x27;',
         '/': '&#x2F;'
     });
     /**
