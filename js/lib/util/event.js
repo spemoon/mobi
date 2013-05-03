@@ -259,7 +259,7 @@ define(function(require, exports, module) {
                 type = props.type;
             }
             var event = document.createEvent(specialEvents[type] || 'Events');
-            bubbles = true;
+            var bubbles = true;
             if(props) {
                 for(var name in props) {
                     if(name === 'bubbles') {
