@@ -2,7 +2,7 @@ define(function(require, exports, module) {
 
     var lang = require('./lang');
 
-    var undefined, key, $, classList;
+    var undefi, key, $, classList;
     var emptyArray = [];
     var slice = emptyArray.slice;
     var filter = emptyArray.slice;
@@ -46,30 +46,56 @@ define(function(require, exports, module) {
     var toString = class2type.toString;
     var camelize, uniq;
     var tempParent = document.createElement('div');
+    var coreHasOwn = Object.prototype.hasOwnProperty;
 
     //命名空间
     var core = {};
 
     function type(obj) {
-        return obj == null ? String(obj) : class2type[toString.call(obj)] || "object";
+        return obj == null ? String(obj) : class2type[toString.call(obj)] || 'object';
     }
 
-    function isWindow(obj) { return obj != null && obj == obj.window; }
+    function isWindow(obj) { return obj != null && obj === obj.window; }
 
-    function isDocument(obj) { return obj != null && obj.nodeType == obj.DOCUMENT_NODE;}
+    function isDocument(obj) { return obj != null && obj.nodeType === obj.DOCUMENT_NODE;}
 
     function compact(array) { return filter.call(array, function(item) { return item != null }); }
 
-    function isObject(obj) { return type(obj) == "object"; }
+    function isObject(obj) { return type(obj) === 'object'; }
 
     function isPlainObject(obj) {
-        return isObject(obj) && !isWindow(obj) && obj.__proto__ == Object.prototype;
+        // Must be an Object.
+        // Because of IE, we also have to check the presence of the constructor property.
+        // Make sure that DOM nodes and window objects don't pass through, as well
+        if ( !obj || type(obj) !== 'object' || obj.nodeType || isWindow( obj ) ) {
+            return false;
+        }
+
+        try {
+            // Not own constructor property must be Object
+            if ( obj.constructor &&
+                !coreHasOwn.call(obj, 'constructor') &&
+                !coreHasOwn.call(obj.constructor.prototype, 'isPrototypeOf') ) {
+                return false;
+            }
+        } catch ( e ) {
+            // IE8,9 Will throw exceptions on certain host objects #9897
+            return false;
+        }
+
+        // Own properties are enumerated firstly, so to speed up,
+        // if last one is own, then all properties are own.
+
+        var key;
+        for ( key in obj ) {}
+
+        return key === undefined || coreHasOwn.call( obj, key );
     }
 
     function flatten(array) { return array.length > 0 ? $.fn.concat.apply([], array) : array; }
 
     camelize = function(str) { return str.replace(/-+(.)?/g, function(match, chr) { return chr ? chr.toUpperCase() : ''; }); }
-    function likeArray(obj) { return typeof obj.length == 'number'; }
+    function likeArray(obj) { return typeof obj.length === 'number'; }
 
     function dasherize(str) {
         return str.replace(/::/g, '/').replace(/([A-Z]+)([A-Z][a-z])/g, '$1_$2').replace(/([a-z\d])([A-Z])/g, '$1_$2').replace(/_/g, '-').toLowerCase();
@@ -80,7 +106,7 @@ define(function(require, exports, module) {
     }
 
     function maybeAddPx(name, value) {
-        return (typeof value == "number" && !cssNumber[dasherize(name)]) ? value + "px" : value;
+        return (typeof value === 'number' && !cssNumber[dasherize(name)]) ? value + 'px' : value;
     }
 
     function funcArg(context, arg, idx, payload) {
@@ -88,33 +114,45 @@ define(function(require, exports, module) {
     }
 
     function setAttribute(node, name, value) {
-        value == null ? node.removeAttribute(name) : node.setAttribute(name, value);
+        if (value === null) {
+            node.removeAttribute(name);
+        } else {
+            node.setAttribute(name, value);
+        }
     }
 
     // access className property while respecting SVGAnimatedString
     function className(node, value) {
-        var klass = node.className, svg = klass && klass.baseVal !== undefined;
+        var klass = node.className, svg = klass && klass.baseVal !== undefi;
 
-        if(value === undefined) return svg ? klass.baseVal : klass;
-        svg ? (klass.baseVal = value) : (node.className = value);
+        if(value === undefi) {
+            return svg ? klass.baseVal : klass;
+        }
+        if (svg) {
+            klass.baseVal = value;
+        } else {
+            node.className = value;
+        }
     }
 
-    uniq = function(array) { return filter.call(array, function(item, idx) { return array.indexOf(item) == idx; }) };
+    uniq = function(array) { return filter.call(array, function(item, idx) { return array.indexOf(item) === idx; }) };
     function defaultDisplay(nodeName) {
         var element, display;
         if(!elementDisplay[nodeName]) {
             element = document.createElement(nodeName);
             document.body.appendChild(element);
-            display = getComputedStyle(element, '').getPropertyValue("display");
+            display = getComputedStyle(element, '').getPropertyValue('display');
             element.parentNode.removeChild(element);
-            display == "none" && (display = "block");
+            if (display === 'none') {
+                display = 'block';
+            }
             elementDisplay[nodeName] = display;
         }
         return elementDisplay[nodeName];
     }
 
     function children(element) {
-        return 'children' in element ? slice.call(element.children) : $.map(element.childNodes, function(node) { if(node.nodeType == 1) return node; });
+        return 'children' in element ? slice.call(element.children) : $.map(element.childNodes, function(node) { if(node.nodeType === 1) {return node;} });
     }
 
     /**
@@ -124,7 +162,7 @@ define(function(require, exports, module) {
      * @return {[type]}          [description]
      */
     core.matches = function(element, selector) {
-        if(!element || element.nodeType != 1) {
+        if(!element || element.nodeType !== 1) {
             return false;
         }
         var matchesSelector = element.webkitMatchesSelector || element.mozMatchesSelector || element.oMatchesSelector || element.matchesSelector;
@@ -138,7 +176,9 @@ define(function(require, exports, module) {
             (parent = tempParent).appendChild(element);
         }
         match = ~core.qsa(parent, selector).indexOf(element);
-        temp && tempParent.removeChild(element);
+        if (temp) {
+            tempParent.removeChild(element);
+        }
         return match;
     };
 
@@ -155,9 +195,9 @@ define(function(require, exports, module) {
      */
     core.fragment = function(html, name, properties) {
         if(html.replace) {
-            html = html.replace(tagExpanderRE, "<$1></$2>");
+            html = html.replace(tagExpanderRE, '<$1></$2>');
         }
-        if(name === undefined) {
+        if(name === undefi) {
             name = fragmentRE.test(html) && RegExp.$1;
         }
         if(!(name in containers)) {
@@ -193,7 +233,7 @@ define(function(require, exports, module) {
      */
     core.Z = function(dom, selector) {
         dom = dom || [];
-        dom.__proto__ = $.fn;
+        dom['__proto__'] = $.fn;
         dom.selector = selector || '';
         return dom;
     };
@@ -230,11 +270,13 @@ define(function(require, exports, module) {
                 dom = compact(selector);
             } else if(isObject(selector)) {
                 //包裹节点，如果是一个普通的对象，复制
-                dom = [isPlainObject(selector) ? $.extend({}, selector) : selector], selector = null;
+                dom = [isPlainObject(selector) ? $.extend({}, selector) : selector];
+                selector = null;
             } else if(fragmentRE.test(selector)) {
                 //如果是html片段，创建节点
-                dom = core.fragment(selector.trim(), RegExp.$1, context), selector = null;
-            } else if(context !== undefined) {
+                dom = core.fragment(selector.trim(), RegExp.$1, context);
+                selector = null;
+            } else if(context !== undefi) {
                 //如果有上下文，先创建一个上下文的集合，从这开始查找节点
                 return $(context).find(selector);
             } else {
@@ -269,17 +311,17 @@ define(function(require, exports, module) {
         return (isDocument(element) && idSelectorRE.test(selector)) ? ( (found = element.getElementById(RegExp.$1)) ? [found] : [] ) : (element.nodeType !== 1 && element.nodeType !== 9) ? [] : slice.call(classSelectorRE.test(selector) ? element.getElementsByClassName(RegExp.$1) : tagSelectorRE.test(selector) ? element.getElementsByTagName(selector) : element.querySelectorAll(selector));
     };
 
-    // "true"  => true
-    // "false" => false
-    // "null"  => null
-    // "42"    => 42
-    // "42.5"  => 42.5
+    // 'true'  => true
+    // 'false' => false
+    // 'null'  => null
+    // '42'    => 42
+    // '42.5'  => 42.5
     // JSON    => parse if valid
     // String  => self
     function deserializeValue(value) {
         var num;
         try {
-            return value ? value == "true" || ( value == "false" ? false : value == "null" ? null : !isNaN(num = Number(value)) ? num : /^[\[\{]/.test(value) ? $.parseJSON(value) : value ) : value;
+            return value ? value === 'true' || ( value === 'false' ? false : value === 'null' ? null : !isNaN(num = Number(value)) ? num : /^[\[\{]/.test(value) ? $.parseJSON(value) : value ) : value;
         } catch(e) {
             return value;
         }
@@ -317,7 +359,7 @@ define(function(require, exports, module) {
     };
 
     function filtered(nodes, selector) {
-        return selector === undefined ? $(nodes) : $(nodes).filter(selector);
+        return selector === undefi ? $(nodes) : $(nodes).filter(selector);
     }
 
     $.contains = function(parent, node) {
@@ -331,11 +373,13 @@ define(function(require, exports, module) {
         return elements;
     };
 
-    if(window.JSON) $.parseJSON = JSON.parse;
+    if(window.JSON) {
+        $.parseJSON = JSON.parse;
+    }
 
     // Populate the class2type map
-    $.each("Boolean Number String Function Array Date RegExp Object Error".split(" "), function(i, name) {
-        class2type[ "[object " + name + "]" ] = name.toLowerCase();
+    $.each('Boolean Number String Function Array Date RegExp Object Error'.split(' '), function(i, name) {
+        class2type[ '[object ' + name + ']' ] = name.toLowerCase();
     });
 
     $.fn = {
@@ -364,7 +408,7 @@ define(function(require, exports, module) {
             return $(slice.apply(this, arguments));
         },
         get: function(idx) {
-            return idx === undefined ? slice.call(this) : this[idx >= 0 ? idx : idx + this.length];
+            return idx === undefi ? slice.call(this) : this[idx >= 0 ? idx : idx + this.length];
         },
         toArray: function() { return this.get(); },
         size: function() {
@@ -386,14 +430,14 @@ define(function(require, exports, module) {
         },
         find: function(selector) {
             var result, $this = this;
-            if(typeof selector == 'object') {
+            if(typeof selector === 'object') {
                 result = $(selector).filter(function() {
                     var node = this;
                     return emptyArray.some.call($this, function(parent) {
                         return $.contains(parent, node);
                     });
                 });
-            } else if(this.length == 1) {
+            } else if(this.length === 1) {
                 result = $(core.qsa(this[0], selector));
             } else {
                 result = this.map(function() { return core.qsa(this, selector); });
@@ -402,7 +446,7 @@ define(function(require, exports, module) {
         },
         closest: function(selector, context) {
             var node = this[0], collection = false;
-            if(typeof selector == 'object') {
+            if(typeof selector === 'object') {
                 collection = $(selector);
             }
             while(node && !(collection ? collection.indexOf(node) >= 0 : core.matches(node, selector))) {
@@ -418,7 +462,7 @@ define(function(require, exports, module) {
         },
         attr: function(name, value) {
             var result;
-            return (typeof name == 'string' && value === undefined) ? (this.length == 0 || this[0].nodeType !== 1 ? undefined : (name == 'value' && this[0].nodeName == 'INPUT') ? this.val() : (!(result = this[0].getAttribute(name)) && name in this[0]) ? this[0][name] : result
+            return (typeof name === 'string' && value === undefi) ? (this.length === 0 || this[0].nodeType !== 1 ? undefi : (name === 'value' && this[0].nodeName === 'INPUT') ? this.val() : (!(result = this[0].getAttribute(name)) && name in this[0]) ? this[0][name] : result
                 ) : this.each(function(idx) {
                 if(this.nodeType !== 1) {
                     return;
@@ -433,19 +477,23 @@ define(function(require, exports, module) {
             });
         },
         removeAttr: function(name) {
-            return this.each(function() { this.nodeType === 1 && setAttribute(this, name); });
+            return this.each(function() {
+                if (this.nodeType === 1) {
+                    setAttribute(this, name);
+                }
+            });
         },
         prop: function(name, value) {
-            return (value === undefined) ? (this[0] && this[0][name]) : this.each(function(idx) {
+            return (value === undefi) ? (this[0] && this[0][name]) : this.each(function(idx) {
                 this[name] = funcArg(this, value, idx, this[name]);
             });
         },
         data: function(name, value) {
             var data = this.attr('data-' + dasherize(name), value);
-            return data !== null ? deserializeValue(data) : undefined;
+            return data !== null ? deserializeValue(data) : undefi;
         },
         val: function(value) {
-            return (value === undefined) ? (this[0] && (this[0].multiple ? $(this[0]).find('option').filter(function(o) { return this.selected; }).pluck('value') : this[0].value)
+            return (value === undefi) ? (this[0] && (this[0].multiple ? $(this[0]).find('option').filter(function(o) { return this.selected; }).pluck('value') : this[0].value)
                 ) : this.each(function(idx) {
                 this.value = funcArg(this, value, idx, this.value);
             });
@@ -458,13 +506,13 @@ define(function(require, exports, module) {
                         left: coords.left - parentOffset.left
                     };
 
-                    if($this.css('position') == 'static') {
+                    if($this.css('position') === 'static') {
                         props['position'] = 'relative';
                     }
                     $this.css(props);
                 });
             }
-            if(this.length == 0) return null;
+            if(this.length === 0) {return null;}
             var obj = this[0].getBoundingClientRect();
             return {
                 left: obj.left + window.pageXOffset,
@@ -474,14 +522,17 @@ define(function(require, exports, module) {
             };
         },
         css: function(property, value) {
-            if(arguments.length < 2 && typeof property == 'string')
+            if(arguments.length < 2 && typeof property === 'string') {
                 return this[0] && (this[0].style[camelize(property)] || getComputedStyle(this[0], '').getPropertyValue(property));
+            }
 
             var css = '';
-            if(type(property) == 'string') {
-                if(!value && value !== 0)
-                    this.each(function() { this.style.removeProperty(dasherize(property)); }); else
-                    css = dasherize(property) + ":" + maybeAddPx(property, value);
+            if(type(property) === 'string') {
+                if(!value && value !== 0) {
+                    this.each(function() { this.style.removeProperty(dasherize(property)); });
+                } else {
+                    css = dasherize(property) + ':' + maybeAddPx(property, value);
+                }
             } else {
                 for(var key in property) {
                     if(!property[key] && property[key] !== 0) {
@@ -495,7 +546,7 @@ define(function(require, exports, module) {
             return this.each(function() { this.style.cssText += ';' + css; });
         },
         text: function(text) {
-            return text === undefined ? (this.length > 0 ? this[0].textContent : null) : this.each(function() { this.textContent = text; });
+            return text === undefi ? (this.length > 0 ? this[0].textContent : null) : this.each(function() { this.textContent = text; });
         },
         hasClass: function(name) {
             return emptyArray.some.call(this, function(el) {
@@ -511,33 +562,44 @@ define(function(require, exports, module) {
                         classList.push(klass);
                     }
                 }, this);
-                classList.length && className(this, cls + (cls ? " " : "") + classList.join(" "));
+                if (classList.length) {
+                    className(this, cls + (cls ? ' ' : ' ') + classList.join(' '));
+                }
             });
         },
         removeClass: function(name) {
             return this.each(function(idx) {
-                if(name === undefined) return className(this, '');
+                if(name === undefi) {return className(this, '');}
                 classList = className(this);
                 funcArg(this, name, idx, classList).split(/\s+/g).forEach(function(klass) {
-                    classList = classList.replace(classRE(klass), " ");
+                    classList = classList.replace(classRE(klass), ' ');
                 });
                 className(this, classList.trim());
             });
         },
         toggleClass: function(name, when) {
             return this.each(function(idx) {
-                var $this = $(this), names = funcArg(this, name, idx, className(this));
+                var $this = $(this), names = funcArg(this, name, idx, className(this)), expr;
                 names.split(/\s+/g).forEach(function(klass) {
-                    (when === undefined ? !$this.hasClass(klass) : when) ? $this.addClass(klass) : $this.removeClass(klass);
+                    if (when === undefi) {
+                        expr = !$this.hasClass(klass);
+                    } else {
+                        expr = when;
+                    }
+                    if (expr) {
+                        $this.addClass(klass);
+                    } else {
+                        $this.removeClass(klass);
+                    }
                 });
             });
         },
         scrollTop: function() {
-            if(!this.length) return;
+            if(!this.length) {return;}
             return ('scrollTop' in this[0]) ? this[0].scrollTop : this[0].scrollY;
         },
         position: function() {
-            if(!this.length) return;
+            if(!this.length) {return;}
 
             var elem = this[0], // Get *real* offsetParent
                 offsetParent = this.offsetParent(), // Get correct offsets
@@ -563,12 +625,21 @@ define(function(require, exports, module) {
             return this.map(function() { return this.cloneNode(true); });
         },
         hide: function() {
-            return this.css("display", "none");
+            return this.css('display', 'none');
         },
         toggle: function(setting) {
             return this.each(function() {
-                var el = $(this);
-                (setting === undefined ? el.css("display") == "none" : setting) ? el.show() : el.hide();
+                var el = $(this), expr;
+                if (setting === undefi) {
+                    expr = (el.css('display') === 'none');
+                } else {
+                    expr = setting;
+                }
+                if (expr) {
+                    el.show();
+                } else {
+                    el.hide();
+                }
             });
         },
         prev: function(selector) { return $(this.pluck('previousElementSibling')).filter(selector || '*'); },
@@ -581,16 +652,13 @@ define(function(require, exports, module) {
             });
         },
         html: function(html) {
-            return html === undefined ? (this.length > 0 ? this[0].innerHTML : null) : this.each(function(idx) {
+            return html === undefi ? (this.length > 0 ? this[0].innerHTML : null) : this.each(function(idx) {
                 var originHtml = this.innerHTML;
                 $(this).empty().append(funcArg(this, html, idx, originHtml));
             });
         },
         empty: function() {
             return this.each(function() { this.innerHTML = ''; });
-        },
-        text: function(text) {
-            return text === undefined ? (this.length > 0 ? this[0].textContent : null) : this.each(function() { this.textContent = text; });
         },
         replaceWith: function(newContent) {
             return this.before(newContent).remove();
@@ -610,7 +678,7 @@ define(function(require, exports, module) {
                 $(this[0]).before(structure = $(structure));
                 var children;
                 // drill down to the inmost element
-                while((children = structure.children()).length) structure = children.first();
+                while((children = structure.children()).length) {structure = children.first();}
                 $(structure).append(this);
             }
             return this;
@@ -619,7 +687,11 @@ define(function(require, exports, module) {
             var func = $.isFunction(structure);
             return this.each(function(index) {
                 var self = $(this), contents = self.contents(), dom = func ? structure.call(this, index) : structure;
-                contents.length ? contents.wrapAll(dom) : self.append(dom);
+                if (contents.length) {
+                    contents.wrapAll(dom);
+                } else {
+                    self.append(dom);
+                }
             });
         },
         unwrap: function() {
@@ -633,14 +705,14 @@ define(function(require, exports, module) {
         },
         not: function(selector) {
             var nodes = [];
-            if($.isFunction(selector) && selector.call !== undefined) {
+            if($.isFunction(selector) && selector.call !== undefi) {
                 this.each(function(idx) {
                     if(!selector.call(this, idx)) {
                         nodes.push(this);
                     }
                 });
             } else {
-                var excludes = typeof selector == 'string' ? this.filter(selector) : (likeArray(selector) && $.isFunction(selector.item)) ? slice.call(selector) : $(selector);
+                var excludes = typeof selector === 'string' ? this.filter(selector) : (likeArray(selector) && $.isFunction(selector.item)) ? slice.call(selector) : $(selector);
                 this.forEach(function(el) {
                     if(excludes.indexOf(el) < 0) {
                         nodes.push(el);
@@ -667,13 +739,14 @@ define(function(require, exports, module) {
         },
         parents: function(selector) {
             var ancestors = [], nodes = this;
-            while(nodes.length > 0)
+            while(nodes.length > 0) {
                 nodes = $.map(nodes, function(node) {
                     if((node = node.parentNode) && !isDocument(node) && ancestors.indexOf(node) < 0) {
                         ancestors.push(node);
                         return node;
                     }
                 });
+            }
             return filtered(ancestors, selector);
         },
         parent: function(selector) {
@@ -695,8 +768,10 @@ define(function(require, exports, module) {
         },
         show: function() {
             return this.each(function() {
-                this.style.display == "none" && (this.style.display = null);
-                if(getComputedStyle(this, '').getPropertyValue("display") == "none") {
+                if (this.style.display === 'none') {
+                    this.style.display = null;
+                }
+                if(getComputedStyle(this, '').getPropertyValue('display') === 'none') {
                     this.style.display = defaultDisplay(this.nodeName);
                 }
             });
@@ -704,7 +779,7 @@ define(function(require, exports, module) {
         offsetParent: function() {
             return this.map(function() {
                 var parent = this.offsetParent || document.body;
-                while(parent && !rootNodeRE.test(parent.nodeName) && $(parent).css("position") == "static") {
+                while(parent && !rootNodeRE.test(parent.nodeName) && $(parent).css('position') === 'static') {
                     parent = parent.offsetParent;
                 }
                 return parent;
@@ -719,7 +794,7 @@ define(function(require, exports, module) {
     ['width', 'height'].forEach(function(dimension) {
         $.fn[dimension] = function(value) {
             var offset, el = this[0], Dimension = dimension.replace(/./, function(m) { return m[0].toUpperCase(); });
-            if(value === undefined) {
+            if(value === undefi) {
                 return isWindow(el) ? el['inner' + Dimension] : isDocument(el) ? el.documentElement['offset' + Dimension] : (offset = this.offset()) && offset[dimension];
             } else {
                 return this.each(function(idx) {
@@ -746,7 +821,7 @@ define(function(require, exports, module) {
             // arguments can be nodes, arrays of nodes, mobi objects and HTML strings
             var argType, nodes = $.map(arguments, function(arg) {
                 argType = type(arg);
-                return argType == "object" || argType == "array" || arg == null ? arg : core.fragment(arg);
+                return argType === 'object' || argType === 'array' || arg === null ? arg : core.fragment(arg);
             }), parent, copyByClone = this.length > 1;
             if(nodes.length < 1) {
                 return this;
@@ -755,8 +830,8 @@ define(function(require, exports, module) {
             return this.each(function(_, target) {
                 parent = inside ? target : target.parentNode;
 
-                // convert all methods to a "before" operation
-                target = operatorIndex == 0 ? target.nextSibling : operatorIndex == 1 ? target.firstChild : operatorIndex == 2 ? target : null;
+                // convert all methods to a 'before' operation
+                target = operatorIndex === 0 ? target.nextSibling : operatorIndex === 1 ? target.firstChild : operatorIndex === 2 ? target : null;
 
                 nodes.forEach(function(node) {
                     if(copyByClone) {
@@ -764,12 +839,6 @@ define(function(require, exports, module) {
                     } else if(!parent) {
                         return $(node).remove();
                     }
-
-                    traverseNode(parent.insertBefore(node, target), function(el) {
-                        if(el.nodeName != null && el.nodeName.toUpperCase() === 'SCRIPT' && (!el.type || el.type === 'text/javascript') && !el.src) {
-                            window['eval'].call(window, el.innerHTML);
-                        }
-                    });
                 });
             });
         };
