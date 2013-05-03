@@ -23,7 +23,7 @@ seajs.use(['../../../../js/lib/util/lang'], function(lang) {
             [1, 2, 3]
         ],
         function: [(function() {})],
-        regexp: [/\s+/g, new RegExp('\s+', 'g')]
+        regexp: [/\s+/g, new RegExp('\\s+', 'g')]
     };
     test('isFunction', function() {
         lang.each(multiTypeData, function(arr, key) {
