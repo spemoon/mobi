@@ -49,7 +49,7 @@ seajs.use(['../../../../js/lib/util/history', '../../../../js/lib/util/core'], f
             },
             teardown: function() {
                 $('#nav').remove();
-                location.hash = '#';
+                history.empty();
             }
         });
         asyncTest('history,route', function() {
