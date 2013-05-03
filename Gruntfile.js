@@ -44,7 +44,7 @@ module.exports = function(grunt) {
                 es5: true, // 允许使用ES5特性
                 evil: false // 不允许使用eval和new Function
             },
-            useDefault: ['Gruntfile.js', 'js/**/*.js', '!js/lib/util/lang.js', '!js/lib/util/ajax.js', '!js/lib/util/core.js', '!js/lib/util/touch.js', '!js/lib/util/scroll.js', '!js/lib/util/touch/touch.js'],
+            useDefault: ['Gruntfile.js', 'js/**/*.js', '!js/lib/util/lang.js', '!js/lib/util/ajax.js'],
             useEval: { // 允许使用eval或者new Function
                 options: {
                     evil: true
