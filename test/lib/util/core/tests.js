@@ -68,8 +68,7 @@ seajs.use(['../../../../js/lib/util/core'], function($) {
 
     test('$.isPlainObject', function() {
         ok($.isPlainObject({}));
-        ok($.isPlainObject(new Object));
-        ok(!$.isPlainObject(new Date));
+        ok(!$.isPlainObject(new Date()));
         ok(!$.isPlainObject(window));
     });
 
@@ -90,7 +89,7 @@ seajs.use(['../../../../js/lib/util/core'], function($) {
     });
 
     test('$.parseJSON', function() {
-        ok($.parseJSON('{'name':'John'}'));
+        ok($.parseJSON('{"name":"John"}'));
     });
 
     test('$.trim', function() {
@@ -100,7 +99,6 @@ seajs.use(['../../../../js/lib/util/core'], function($) {
     test('$.type', function() {
         equal($.type('    hello, how are you?    '), 'string');
         equal($.type(' '), 'string');
-        equal($.type(new Object), 'object');
         equal($.type({}), 'object');
         equal($.type(1), 'number');
         equal($.type(0), 'number');
@@ -201,16 +199,16 @@ seajs.use(['../../../../js/lib/util/core'], function($) {
         if($('.wrap').parent().is('div')) {
             ok($('.wrap').unwrap());
         } else {
-            ok($('.wrap').wrap('<div class='hide'></div>'));
+            ok($('.wrap').wrap('<div class="hide"></div>'));
         }
     });
 
     test('wrapAll', function() {
-        ok($('.inner').wrapAll('<div class='new' />'));
+        ok($('.inner').wrapAll('<div class="new" />'));
     });
 
     test('wrapInner', function() {
-        ok($('.inner').wrapInner('<div class='new' />'));
+        ok($('.inner').wrapInner('<div class="new" />'));
     });
 
     module('DOM操作——查找操作');
@@ -294,7 +292,7 @@ seajs.use(['../../../../js/lib/util/core'], function($) {
     });
 
     test('is', function() {
-        ok($('input[type='checkbox']').parent().is('form'));
+        ok($('input[type="checkbox"]').parent().is('form'));
     });
 
     test('not', function() {
@@ -328,7 +326,7 @@ seajs.use(['../../../../js/lib/util/core'], function($) {
     test('prop', function() {
         ok($('#check1').prop('checked'));
         ok(!$('#check2').prop('checked'));
-        ok($('input[type='checkbox']').prop('type', function(index, oldvalue) {
+        ok($('input[type="checkbox"]').prop('type', function(index, oldvalue) {
             // console.log(index+'|'+oldvalue);
         }));
     });
