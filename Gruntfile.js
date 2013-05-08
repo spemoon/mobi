@@ -65,12 +65,15 @@ module.exports = function(grunt) {
         // 转化
         transport: {
             options: {
-                format: 'public/js/dist/{{filename}}'
+                debug: false,
+                format: 'dist/{{filename}}'  // id format
             },
-            app: {
-                files: {
-                    'js/.build': 'js/src/**/*.js'
-                }
+            test: {
+                files: [{
+                    cwd: 'js',
+                    src: '**/*.js',
+                    dest: '.build'
+                }]
             }
         },
         // 合并
@@ -79,15 +82,24 @@ module.exports = function(grunt) {
                 options: {
                     relative: true
                 },
-                files: {
-                }
+                files: [{
+                    expand: true,
+                    cwd: '.build/app',
+                    src: '**/index.js',
+                    dest: 'public/js/dist/app'
+                }]
             }
         },
         // 压缩
         uglify: {
             app: {
-                files: {
-                }
+                files: [{
+                    expand: true,
+                    cwd: 'public/js/dist/',
+                    src: '**/*.js',
+                    dest: 'public/js/dist/',
+                    ext: '.js'
+                }]
             }
         },
         // 清理
@@ -118,5 +130,5 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-qunit');
     grunt.loadNpmTasks('grunt-contrib-watch');
 
-    grunt.registerTask('default', ['jshint', 'qunit', 'watch']);
+    grunt.registerTask('default', ['jshint', 'qunit', 'transport', 'concat', 'uglify', 'clean']);
 }
