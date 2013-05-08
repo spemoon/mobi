@@ -14,7 +14,6 @@ define(function(require, exports, module) {
         });
     } else {
         map.push(function(url) {// 本地源码形式
-            console.log(url);
             return url.replace(remote + 'public/js/dist/', local + 'js/');
         });
     }
