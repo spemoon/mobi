@@ -120,7 +120,7 @@ seajs.use(['../../../../js/lib/util/ajax', '../../../../js/lib/util/core'], func
                 dataType: 'json',
                 error: function(xhr, type, err) {
                     // phantomjs返回的status总是0, https://github.com/ariya/phantomjs/issues/11195
-                    equal(type, xhr.status === 0 ? 'abort' : 'error');
+                    equal(type, window._phantom ? 'abort' : 'error');
                     start();
                 }
             });
