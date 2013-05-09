@@ -1,4 +1,5 @@
 /**
+ * AJAX基础功能
  * User: caolvchong@gmail.com
  * Date: 4/23/13
  * Time: 11:06 AM
@@ -217,7 +218,7 @@ define(function(require, exports, module) {
 
     var escape = encodeURIComponent;
 
-    $.extend($, {
+    var r = {
         /**
          * 设定AJAX的默认设置
          * @param settings
@@ -299,6 +300,29 @@ define(function(require, exports, module) {
         /**
          * AJAX 核心
          * @param options
+         *          crossDomain: 是否跨域，默认false
+         *          url: 请求地址
+         *          cache: 是否缓存，默认false
+         *          dataType: 返回数据类型，有xml/text/script/json，默认text
+         *          data: 请求参数
+         *          type: 请求类型，默认GET
+         *          headers: 请求头
+         *          async: 是否异步，默认true
+         *          timeout: 超时时间，默认0，宿主默认超时时间
+         *          回调
+         *              beforeSend: 返回false则不发送ajax请求
+         *              success: 成功
+         *              error: 失败
+         *              complete: 完成
+         *          触发事件
+         *              ajaxStart: 全局开始第一个ajax请求，事件之后触发beforeSend
+         *              ajaxBeforeSend: 返回false则不发送ajax请求
+         *              ajaxSend: 发送请求事件
+         *              ajaxSuccess: 事件之前触发success回调，事件之后触发ajaxComplete事件
+         *              ajaxError: 事件之前触发error回调，事件之后触发ajaxComplete事件
+         *              ajaxComplete: 事件之前触发complete回调，事件之后触发ajaxStop全局事件
+         *              ajaxStop: 全局结束最后一个ajax请求
+         *
          */
         ajax: function(options) {
             // 配置
@@ -439,7 +463,9 @@ define(function(require, exports, module) {
             options.dataType = 'json';
             return $.ajax(options);
         }
-    });
+    };
+
+    $.extend($, r);
     /**
      * 某个节点直接载入AJAX返回的结果
      */
@@ -465,4 +491,6 @@ define(function(require, exports, module) {
         $.ajax(options);
         return this;
     };
+
+    module.exports = $;
 });
