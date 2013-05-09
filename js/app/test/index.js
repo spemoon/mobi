@@ -5,17 +5,34 @@
  */
 define(function(require, exports, module) {
     var $ = require('../../lib/util/core');
-    var ajax = require('../../lib/util/ajax');
+    var ajax = require('../../lib/util/ajax.ext');
     var helper = require('./helper');
 
     $(function() {
-        $('#btn').click(function() {
-            $.get('./data.php', function(data) {
-                var serverText = +data.text;
-                var clientText = helper.random();
-                var flag = serverText === clientText;
-                helper.append('server random:' + serverText + ' ; client random:' + clientText + (flag ? ' ---> the same' : ''), $('#box'));
-            }, 'json');
+        var req = ajax.single('random');
+        var btn = $('#btn');
+        var val = btn.val();
+        btn.click(function() {
+            req.send({
+                url: './data.php',
+                rule: {
+                    success: function() {
+                        return true;
+                    }
+                },
+                beforeSend: function() {
+                    btn.val('waiting...');
+                },
+                success: function(data) {
+                    var serverText = +data.text;
+                    var clientText = helper.random();
+                    var flag = serverText === clientText;
+                    helper.append('server random:' + serverText + ' ; client random:' + clientText + (flag ? ' ---> the same' : ''), $('#box'));
+                },
+                complete: function() {
+                    btn.val(val);
+                }
+            });
         });
     });
 });
