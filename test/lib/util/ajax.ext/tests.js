@@ -125,7 +125,7 @@ seajs.use(['../../../../js/lib/util/ajax.ext', '../../../../js/lib/util/core'], 
                 req.send({
                     url: './200.php',
                     data: {
-                        random: +new Date + Math.random()
+                        random: +new Date() + Math.random()
                     },
                     success: function(data) {
                         equal(3, i);

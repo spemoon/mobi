@@ -9,6 +9,16 @@ define(function(require, exports, module) {
     var $ = require('./core');
     var detect = require('./detect');
 
+    var doc = document;
+    var dummyStyle = doc.createElement('div').style;
+    function prefixStyle (style) {
+        if ( vendor === '' ) {
+            return style;
+        }
+
+        style = style.charAt(0).toUpperCase() + style.substr(1);
+        return vendor + style;
+    }
     var m = Math;
     var mround = function (r) { return r >> 0; };
     var vendor = (/webkit/i).test(navigator.appVersion) ? 'webkit' :
@@ -20,7 +30,7 @@ define(function(require, exports, module) {
     var isPlaybook = $.browser.playbook;
     var isTouchPad = (/hp-tablet/gi).test(navigator.appVersion);
 
-    var has3d = 'WebKitCSSMatrix' in window && 'm11' in new WebKitCSSMatrix();
+    var has3d = prefixStyle('perspective') in dummyStyle;
     var hasTouch = 'ontouchstart' in window && !isTouchPad;
     var hasTransform = vendor + 'Transform' in document.documentElement.style;
     var hasTransitionEnd = isIDevice || isPlaybook;
@@ -55,10 +65,10 @@ define(function(require, exports, module) {
     var trnClose = has3d ? ',0)' : ')';
 
     // Constructor
-    iScroll = function (el, options) {
+    var iScroll = function (el, options) {
         var that = this, doc = document, i;
 
-        that.wrapper = typeof el == 'object' ? el : doc.getElementById(el);
+        that.wrapper = typeof el === 'object' ? el : doc.getElementById(el);
         that.wrapper.style.overflow = 'hidden';
         that.scroller = that.wrapper.children[0];
 
@@ -131,18 +141,26 @@ define(function(require, exports, module) {
         handleEvent: function (e) {
             var that = this;
             switch(e.type) {
-                case START_EV:
-                    if (!hasTouch && e.button !== 0) {return;}
-                    that._start(e);
-                    break;
-                case MOVE_EV:
-                    that._move(e);
-                    break;
-                case END_EV:
-                case CANCEL_EV: that._end(e); break;
-                case RESIZE_EV: that._resize(); break;
-                case 'mouseout': that._mouseout(e); break;
-                case 'webkitTransitionEnd': that._transitionEnd(e); break;
+            case START_EV:
+                if (!hasTouch && e.button !== 0) {return;}
+                that._start(e);
+                break;
+            case MOVE_EV:
+                that._move(e);
+                break;
+            case END_EV:
+            case CANCEL_EV:
+                that._end(e);
+                break;
+            case RESIZE_EV:
+                that._resize();
+                break;
+            case 'mouseout':
+                that._mouseout(e);
+                break;
+            case 'webkitTransitionEnd':
+                that._transitionEnd(e);
+                break;
             }
         },
         _resize: function () {
@@ -169,11 +187,11 @@ define(function(require, exports, module) {
                 point = hasTouch ? e.touches[0] : e,
                 matrix, x, y;
 
-            if (!that.enabled) return;
+            if (!that.enabled) {return;}
 
-            if (that.options.onBeforeScrollStart) that.options.onBeforeScrollStart.call(that, e);
+            if (that.options.onBeforeScrollStart) {that.options.onBeforeScrollStart.call(that, e);}
 
-            if (that.options.useTransition) that._transitionTime(0);
+            if (that.options.useTransition) {that._transitionTime(0);}
 
             that.moved = false;
             that.animating = false;
@@ -196,9 +214,12 @@ define(function(require, exports, module) {
                     y = getComputedStyle(that.scroller, null).top.replace(/[^0-9-]/g, '') * 1;
                 }
 
-                if (x != that.x || y != that.y) {
-                    if (that.options.useTransition) that._unbind('webkitTransitionEnd');
-                    else cancelFrame(that.aniTime);
+                if (x !== that.x || y !== that.y) {
+                    if (that.options.useTransition) {
+                        that._unbind('webkitTransitionEnd');
+                    } else {
+                        cancelFrame(that.aniTime);
+                    }
                     that.steps = [];
                     that._pos(x, y);
                 }
@@ -211,7 +232,7 @@ define(function(require, exports, module) {
 
             that.startTime = e.timeStamp || Date.now();
 
-            if (that.options.onScrollStart) that.options.onScrollStart.call(that, e);
+            if (that.options.onScrollStart) {that.options.onScrollStart.call(that, e);}
 
             that._bind(MOVE_EV);
             that._bind(END_EV);
@@ -227,8 +248,7 @@ define(function(require, exports, module) {
                 newY = that.y + deltaY,
                 timestamp = e.timeStamp || Date.now();
 
-                console.log('move');
-            if (that.options.onBeforeScrollMove) that.options.onBeforeScrollMove.call(that, e);
+            if (that.options.onBeforeScrollMove) {that.options.onBeforeScrollMove.call(that, e);}
 
             that.pointX = point.pageX;
             that.pointY = point.pageY;
@@ -272,7 +292,7 @@ define(function(require, exports, module) {
                 that.startY = that.y;
             }
 
-            if (that.options.onScrollMove) that.options.onScrollMove.call(that, e);
+            if (that.options.onScrollMove) {that.options.onScrollMove.call(that, e);}
         },
 
         _end: function (e) {
@@ -292,15 +312,15 @@ define(function(require, exports, module) {
             that._unbind(END_EV);
             that._unbind(CANCEL_EV);
 
-            if (that.options.onBeforeScrollEnd) that.options.onBeforeScrollEnd.call(that, e);
+            if (that.options.onBeforeScrollEnd) {that.options.onBeforeScrollEnd.call(that, e);}
 
             if (!that.moved) {
                 if (hasTouch) {
                     // Find the last touched element
                     target = point.target;
-                    while (target.nodeType != 1) target = target.parentNode;
+                    while (target.nodeType !== 1) {target = target.parentNode;}
 
-                    if (target.tagName != 'SELECT' && target.tagName != 'INPUT' && target.tagName != 'TEXTAREA') {
+                    if (target.tagName !== 'SELECT' && target.tagName !== 'INPUT' && target.tagName !== 'TEXTAREA') {
                         ev = document.createEvent('MouseEvents');
                         ev.initMouseEvent('click', true, true, e.view, 1,
                             point.screenX, point.screenY, point.clientX, point.clientY,
@@ -313,7 +333,7 @@ define(function(require, exports, module) {
 
                 that._resetPos(200);
 
-                if (that.options.onTouchEnd) that.options.onTouchEnd.call(that, e);
+                if (that.options.onTouchEnd) {that.options.onTouchEnd.call(that, e);}
                 return;
             }
 
@@ -324,8 +344,8 @@ define(function(require, exports, module) {
                 newPosX = that.x + momentumX.dist;
                 newPosY = that.y + momentumY.dist;
 
-                if ((that.x > 0 && newPosX > 0) || (that.x < that.maxScrollX && newPosX < that.maxScrollX)) momentumX = { dist:0, time:0 };
-                if ((that.y > 0 && newPosY > 0) || (that.y < that.maxScrollY && newPosY < that.maxScrollY)) momentumY = { dist:0, time:0 };
+                if ((that.x > 0 && newPosX > 0) || (that.x < that.maxScrollX && newPosX < that.maxScrollX)) {momentumX = { dist:0, time:0 };}
+                if ((that.y > 0 && newPosY > 0) || (that.y < that.maxScrollY && newPosY < that.maxScrollY)) {momentumY = { dist:0, time:0 };}
             }
 
             if (momentumX.dist || momentumY.dist) {
@@ -333,12 +353,12 @@ define(function(require, exports, module) {
 
                 that.scrollTo(mround(newPosX), mround(newPosY), newDuration);
 
-                if (that.options.onTouchEnd) that.options.onTouchEnd.call(that, e);
+                if (that.options.onTouchEnd) {that.options.onTouchEnd.call(that, e);}
                 return;
             }
 
             that._resetPos(200);
-            if (that.options.onTouchEnd) that.options.onTouchEnd.call(that, e);
+            if (that.options.onTouchEnd) {that.options.onTouchEnd.call(that, e);}
         },
 
         _resetPos: function (time) {
@@ -346,9 +366,7 @@ define(function(require, exports, module) {
                 resetX = that.x >= 0 ? 0 : that.x < that.maxScrollX ? that.maxScrollX : that.x,
                 resetY = that.y >= 0 || that.maxScrollY > 0 ? 0 : that.y < that.maxScrollY ? that.maxScrollY : that.y;
 
-            if (resetX == that.x && resetY == that.y) {
-                console.log('resetX: ' + resetX);
-                console.log('moved: ' + that.moved);
+            if (resetX === that.x && resetY === that.y) {
                 if (that.moved) {
                     if (that.options.onScrollEnd) {
                         that.options.onScrollEnd.call(that);      // Execute custom code on scroll end
@@ -358,7 +376,6 @@ define(function(require, exports, module) {
 
                 return;
             }
-            console.log(resetX + '---' + resetY + '---' + time);
 
             that.scrollTo(resetX, resetY, time || 0);
         },
@@ -372,7 +389,7 @@ define(function(require, exports, module) {
             }
 
             while (t = t.parentNode) {
-                if (t == this.wrapper) {return;}
+                if (t === this.wrapper) {return;}
             }
 
             this._end(e);
@@ -381,7 +398,7 @@ define(function(require, exports, module) {
         _transitionEnd: function (e) {
             var that = this;
 
-            if (e.target != that.scroller) {return;}
+            if (e.target !== that.scroller) {return;}
 
             that._unbind('webkitTransitionEnd');
 
@@ -400,7 +417,7 @@ define(function(require, exports, module) {
                 step, easeOut,
                 animate;
 
-            if (that.animating) return;
+            if (that.animating) {return;}
 
             if (!that.steps.length) {
                 that._resetPos(400);
@@ -409,7 +426,7 @@ define(function(require, exports, module) {
 
             step = that.steps.shift();
 
-            if (step.x == startX && step.y == startY) step.time = 0;
+            if (step.x === startX && step.y === startY) {step.time = 0;}
 
             that.animating = true;
             that.moved = true;
@@ -418,8 +435,11 @@ define(function(require, exports, module) {
                 that._transitionTime(step.time);
                 that._pos(step.x, step.y);
                 that.animating = false;
-                if (step.time) that._bind('webkitTransitionEnd');
-                else that._resetPos(0);
+                if (step.time) {
+                    that._bind('webkitTransitionEnd');
+                } else {
+                    that._resetPos(0);
+                }
                 return;
             }
 
@@ -430,7 +450,9 @@ define(function(require, exports, module) {
                 if (now >= startTime + step.time) {
                     that._pos(step.x, step.y);
                     that.animating = false;
-                    if (that.options.onAnimationEnd) that.options.onAnimationEnd.call(that);            // Execute custom code on animation end
+                    if (that.options.onAnimationEnd) {
+                        that.options.onAnimationEnd.call(that);            // Execute custom code on animation end
+                    }
                     that._startAni();
                     return;
                 }
@@ -484,7 +506,7 @@ define(function(require, exports, module) {
             while (el = el.offsetParent) {
                 left -= el.offsetLeft;
                 top -= el.offsetTop;
-            } 
+            }
 
             return { left: left, top: top };
         },
@@ -515,9 +537,9 @@ define(function(require, exports, module) {
             that._unbind(END_EV);
             that._unbind(CANCEL_EV);
             that._unbind('mouseout', that.wrapper);
-            if (that.options.useTransition) that._unbind('webkitTransitionEnd');
+            if (that.options.useTransition) {that._unbind('webkitTransitionEnd');}
 
-            if (that.options.onDestroy) that.options.onDestroy.call(that);
+            if (that.options.onDestroy) {that.options.onDestroy.call(that);}
         },
 
         refresh: function () {
@@ -544,8 +566,6 @@ define(function(require, exports, module) {
 
             that.scroller.style[vendor + 'TransitionDuration'] = '0';
 
-            console.log('refresh: ' + offset);
-
             that._resetPos(200);
         },
 
@@ -556,7 +576,7 @@ define(function(require, exports, module) {
 
             that.stop();
 
-            if (!step.length) step = [{ x: x, y: y, time: time, relative: relative }];
+            if (!step.length) {step = [{ x: x, y: y, time: time, relative: relative }];}
 
             for (i=0, l=step.length; i<l; i++) {
                 if (step[i].relative) { step[i].x = that.x - step[i].x; step[i].y = that.y - step[i].y; }
@@ -569,7 +589,7 @@ define(function(require, exports, module) {
         scrollToElement: function (el, time) {
             var that = this, pos;
             el = el.nodeType ? el : that.scroller.querySelector(el);
-            if (!el) return;
+            if (!el) {return;}
 
             pos = that._offset(el);
             pos.left += that.wrapperOffsetLeft;
