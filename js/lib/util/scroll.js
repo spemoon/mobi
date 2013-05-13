@@ -169,12 +169,8 @@ define(function(require, exports, module) {
                 point = hasTouch ? e.touches[0] : e,
                 matrix, x, y;
 
-                console.log('start');
-console.log(that.enabled);
-
             if (!that.enabled) return;
 
-console.log(that.enabled);
             if (that.options.onBeforeScrollStart) that.options.onBeforeScrollStart.call(that, e);
 
             if (that.options.useTransition) that._transitionTime(0);
