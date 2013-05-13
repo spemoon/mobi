@@ -64,7 +64,7 @@ define(function(require, exports, module) {
                 $(this).find('.delete').toggle();
             });
 
-            var scroll = new iscroll('wrapper');
+            var scroll = new iscroll('wrapper', { vScrollbar: false });
 
         })();
     });

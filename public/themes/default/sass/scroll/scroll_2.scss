@@ -1,0 +1,26 @@
+@import '../reset.scss';
+@import '../base.scss';
+@import '../list.scss';
+
+#wrapper{
+    -webkit-overflow-scrolling: touch;
+}
+.top-bar, .bottom-bar{
+    height: 50px;
+    width: 100%;
+    position: absolute;
+    background: $yellow;
+}
+.top-bar{
+    top: 0;
+}
+.bottom-bar{
+    bottom: 0;
+    background: $pink;
+}
+.scroll-frame{
+    width: 100%;
+    position: absolute;
+    top: 50px;
+    bottom: 50px;
+}
