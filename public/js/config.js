@@ -1,13 +1,14 @@
 (function() {
-    var development = true;
+    var development = false;
     var version = '0.0.1';
 
-    var plugins = ['shim'];
+    var plugins = [];
     var map = [];
     if(development) { // 开发模式
         plugins.push('nocache');
         var dist = 'public/js/dist/';
         var src = 'js/'
+        var mobi = ['public/js/mobi/', 'js/lib/util/'];
 
         map.push(function(url) {
             if (url.indexOf(dist) > 0) {
@@ -15,6 +16,8 @@
             }
             return url;
         });
+
+        map.push(mobi);
     } else { // 本地部署模式/线上模式
         map.push(function(url) {
             url += (url.indexOf('?') === -1 ? '?' : '&') + '_v=' + version;
@@ -26,10 +29,7 @@
         plugins: plugins,
         map: map,
         alias: {
-            jquery: {
-                src: 'jquery/jquery-1.9.1.min.js',
-                exports: 'jQuery'
-            }
+            $: 'mobi/$.js'
         }
     });
 })();
