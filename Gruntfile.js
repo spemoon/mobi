@@ -81,21 +81,25 @@ module.exports = function(grunt) {
                 format: 'dist/{{filename}}'  // id format
             },
             all: {
-                files: [{
-                    cwd: 'js',
-                    src: '**/*.js',
-                    dest: '.build'
-                }]
+                files: [
+                    {
+                        cwd: 'js',
+                        src: '**/*.js',
+                        dest: '.build'
+                    }
+                ]
             },
             mobi: {
                 options: {
                     format: 'mobi/{{filename}}'
                 },
-                files: [{
-                    cwd: 'js/lib/util',
-                    src: ['lang.js', 'core.js', 'event.js', 'ajax.js', 'ajax_ext.js', 'detect.js', 'history.js', '$.js'],
-                    dest: '.build/mobi'
-                }]
+                files: [
+                    {
+                        cwd: 'js/lib/util',
+                        src: ['lang.js', 'core.js', 'event.js', 'ajax.js', 'ajax_ext.js', 'detect.js', 'history.js', '$.js'],
+                        dest: '.build/mobi'
+                    }
+                ]
             }
         },
         // 合并
@@ -137,6 +141,10 @@ module.exports = function(grunt) {
                         ext: '.js'
                     }
                 ]
+            },
+            mobi: {
+                src: 'public/js/mobi/$.js',
+                dest: 'public/js/mobi/$.js'
             }
         },
         // 清理
