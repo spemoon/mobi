@@ -1,7 +1,7 @@
 module.exports = function(grunt) {
 
     var server = 'http://localhost/mobi/';
-    var networkFileList = ['test/lib/util/ajax/index.html', 'test/lib/util/ajax.ext/index.html'];
+    var networkFileList = ['test/lib/util/ajax/index.html', 'test/lib/util/ajax_ext/index.html'];
     var prefixPath = function(arr, prefix) {
         var temp = [];
         arr.forEach(function(val, index) {
@@ -80,14 +80,22 @@ module.exports = function(grunt) {
                 debug: false,
                 format: 'dist/{{filename}}'  // id format
             },
-            test: {
-                files: [
-                    {
-                        cwd: 'js',
-                        src: '**/*.js',
-                        dest: '.build'
-                    }
-                ]
+            all: {
+                files: [{
+                    cwd: 'js',
+                    src: '**/*.js',
+                    dest: '.build'
+                }]
+            },
+            mobi: {
+                options: {
+                    format: 'mobi/{{filename}}'
+                },
+                files: [{
+                    cwd: 'js/lib/util',
+                    src: ['lang.js', 'core.js', 'event.js', 'ajax.js', 'ajax_ext.js', 'detect.js', 'history.js', '$.js'],
+                    dest: '.build/mobi'
+                }]
             }
         },
         // 合并
@@ -102,6 +110,17 @@ module.exports = function(grunt) {
                         cwd: '.build/app',
                         src: '**/index.js',
                         dest: 'public/js/dist/app'
+                    }
+                ]
+            },
+            mobi: {
+                options: {
+                    relative: true
+                },
+                files: [
+                    {
+                        src: ['.build/mobi/$.js'],
+                        dest: 'public/js/mobi/$.js'
                     }
                 ]
             }
