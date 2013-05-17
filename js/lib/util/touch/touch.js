@@ -6,7 +6,7 @@
 
 define(function(require, exports, module) {
 
-    var $ = require('./core');
+    var $ = require('../core');
 	/**
 	 * 内部变量初始化
 	 * @touchDataObj    记录节点在touch事件中数据的变化
