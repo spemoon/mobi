@@ -4,12 +4,11 @@
  * Time: 4:35 PM
  */
 define(function(require, exports, module) {
-    var $ = require('../../lib/util/core');
-    var ajax = require('../../lib/util/ajax.ext');
+    var $ = require('$');
     var helper = require('./helper');
 
     $(function() {
-        var req = ajax.single('random');
+        var req = $.ajaxExt.single('random');
         var btn = $('#btn');
         var val = btn.val();
         btn.click(function() {

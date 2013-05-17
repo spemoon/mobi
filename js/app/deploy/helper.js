@@ -4,7 +4,7 @@
  * Time: 4:35 PM
  */
 define(function(require, exports, module) {
-    var $ = require('../../lib/util/core');
+    var $ = require('$');
 
     $.fn.xpend = function(text) {
         this.append('<div>' + text + '</div>');
