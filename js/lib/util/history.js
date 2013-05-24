@@ -8,6 +8,8 @@ define(function(require, exports, module) {
     var defaultRouter = 'defaultRouter'; // 默认key
     var defaultHash; // 默认触发的hash，可以是一个字符串，或者是一个function
 
+    var prevURL = location.href; // 缓存上一次的URL，防止某些浏览器支持hashchange事件，但是取不到oldURL和newURL的情况
+
     var helper = {
         /**
          * 将路由转化为正则表达式
@@ -134,10 +136,11 @@ define(function(require, exports, module) {
 
             if(supportHash) {
                 window.onhashchange = function(e) {
-                    var prev = e.oldURL;
-                    var url = e.newURL;
+                    var prev = e.oldURL || prevURL;
+                    var url = e.newURL || location.href;
                     var hash = helper.getHash();
                     if(prev !== url) {
+                        prevURL = url;
                         helper.match(hash, cache);
                     }
                 };
