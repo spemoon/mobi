@@ -4,9 +4,9 @@
  * Time: 10:13 AM
  */
 define(function(require, exports, module) {
-    return function(params) {
+    module.exports = function(params) {
         var $ = params.r.$;
         var id = params.p.id;
-        $('#box').html('the user id is: ' + (id || 'id not found'));
+        $('#box').html('--->the user id is: ' + (id || 'id not found'));
     };
 });

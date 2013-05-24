@@ -4,8 +4,9 @@
  * Time: 10:13 AM
  */
 define(function(require, exports, module) {
-    return function(params) {
+    var helper = require('../helper');
+    module.exports = function(params) {
         var $ = params.r.$;
-        $('#box').html('hello, my name is xxx, ' + new Date());
+        $('#box').html(helper.tail('my name is Tom hoo'));
     };
 });

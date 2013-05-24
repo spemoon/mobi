@@ -4,8 +4,9 @@
  * Time: 10:13 AM
  */
 define(function(require, exports, module) {
-    return function(params) {
+    var helper = require('../helper');
+    module.exports = function(params) {
         var $ = params.r.$;
-        $('#box').html('home:' + new Date());
+        $('#box').html(helper.head('home--->new version  :)'));
     };
 });
