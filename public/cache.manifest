@@ -1,0 +1,11 @@
+CACHE MANIFEST
+# VERSION 0.5.0
+# 缓存的文件
+CACHE:
+/mobi/public/js/seajs/sea.js
+/mobi/public/js/config.js
+/mobi/public/js/mobi/$.js
+
+# 在线的文件
+NETWORK:
+*
