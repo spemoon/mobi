@@ -1,5 +1,6 @@
 define(function(require, exports, module) {
     var $ = require('$');
+    var cssFolder = '/mobi/public/themes/';
     var page = {
         home: {
             url: 'dist/app/version/home/index',
@@ -33,8 +34,14 @@ define(function(require, exports, module) {
 
         }
     };
+
     $(function() {
         var box = $('#box');
+        seajs.vuse({
+            url: cssFolder + 'default/css/scroll/scroll_1.css',
+            version: '0.0.1'
+        });
+
         // 路由
         $.history.listen({
             home: function() {
