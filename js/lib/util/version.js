@@ -28,6 +28,19 @@
             g(data);
         },
         /**
+         * 执行css
+         * @param data
+         */
+        importStyle: function(data) {
+            var element = document.createElement('style');
+            document.getElementsByTagName('head')[0].appendChild(element);
+            if(element.styleSheet) {// IE
+                element.styleSheet.cssText = data;
+            } else { // W3C
+                element.appendChild(document.createTextNode(data));
+            }
+        },
+        /**
          * ajax获取数据
          * @param url
          * @param callback
@@ -101,7 +114,7 @@
                     helper.eval(code);
                     seajs.use(helper.getMain(code), callback);
                 } else if(type === 'css') {
-
+                    helper.importStyle(code);
                 }
             } else { // 本地没有找到对应资源
                 if(typeof seajs.vuse.localNotFound === 'function') {
