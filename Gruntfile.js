@@ -56,13 +56,13 @@ module.exports = function(grunt) {
                 es5: true, // 允许使用ES5特性
                 evil: false // 不允许使用eval和new Function
             },
-            useDefault: ['Gruntfile.js', 'js/**/*.js', '!js/lib/util/lang.js', '!js/lib/util/ajax.js'],
+            useDefault: ['Gruntfile.js', 'js/**/*.js', '!js/lib/util/lang.js', '!js/lib/util/ajax.js', '!js/lib/util/version.js'],
             useEval: { // 允许使用eval或者new Function
                 options: {
                     evil: true
                 },
                 files: {
-                    src: ['js/lib/util/lang.js', 'js/lib/util/ajax.js']
+                    src: ['js/lib/util/lang.js', 'js/lib/util/ajax.js', 'js/lib/util/version.js']
                 }
             },
             testUnit: {
@@ -143,8 +143,16 @@ module.exports = function(grunt) {
                 ]
             },
             mobi: {
-                src: 'public/js/mobi/$.js',
-                dest: 'public/js/mobi/$.js'
+                files: [
+                    {
+                        src: 'public/js/mobi/$.js',
+                        dest: 'public/js/mobi/$.js'
+                    },
+                    {
+                        src: 'js/lib/util/version.js',
+                        dest: 'public/js/mobi/version.js'
+                    }
+                ]
             }
         },
         // 清理
