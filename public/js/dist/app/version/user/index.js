@@ -1,1 +1,1 @@
-define("dist/app/version/user/index",[],function(e,n,i){i.exports=function(e){var n=e.r.$,i=e.p.id;n("#box").html("--->the user id is: "+(i||"id not found"))}});
+define("dist/app/version/user/index",[],function(e,n,i){i.exports=function(e){var n=e.r.$,i=e.p.id;n("#box").html("the user id is: "+(i||"id not found"))}});

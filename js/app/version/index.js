@@ -7,7 +7,7 @@ define(function(require, exports, module) {
         },
         user: {
             url: 'dist/app/version/user/index',
-            version: '0.0.1'
+            version: '0.0.2'
         },
         about: {
             url: 'dist/app/version/about/index',
@@ -18,7 +18,7 @@ define(function(require, exports, module) {
     var fn = function(name, args) {
         var p = page[name];
         if(p) {
-            seajs.xuse({
+            seajs.vuse({
                 url: p.url,
                 version: p.version,
                 callback: function(mod) {
