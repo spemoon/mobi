@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>mobi · api</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="../css/bootstrap.css" rel="stylesheet">
+    <link href="../css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="../css/docs.css" rel="stylesheet">
+    <link href="../css/prettify.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+    <script src="../js/html5shiv.js"></script>
+    <![endif]-->
+
+</head>
+
+<body data-spy="scroll" data-target=".bs-docs-sidebar">
+
+    <!-- Navbar
+    ================================================== -->
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="navbar-inner">
+            <div class="container">
+                <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="brand" href="../../index.html">mobi</a>
+
+                <div class="nav-collapse collapse">
+                    <ul class="nav">
+                        <li>
+                            <a href="../../index.html">Home</a>
+                        </li>
+                        <li class="active">
+                            <a href="#">Api</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Subhead
+    ================================================== -->
+    <header class="jumbotron subhead" id="overview">
+        <div class="container">
+            <h1>api</h1>
+
+            <p class="lead">这部分介绍mobi核心库的api</p>
+
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- Docs nav
+        ================================================== -->
+        <div class="row">
+            <div class="span3 bs-docs-sidebar">
+                <ul class="nav nav-list bs-docs-sidenav">
+                    <li><a href="#core"><i class="icon-chevron-right"></i> core</a></li>
+                    <li><a href="#lang"><i class="icon-chevron-right"></i> lang</a></li>
+                    <li><a href="#event"><i class="icon-chevron-right"></i> event</a></li>
+                    <li><a href="#ajax"><i class="icon-chevron-right"></i> ajax</a></li>
+                    <li><a href="#ajax_ext"><i class="icon-chevron-right"></i> ajax_ext</a></li>
+                    <li><a href="#history"><i class="icon-chevron-right"></i> history</a></li>
+                    <li><a href="#detect"><i class="icon-chevron-right"></i> detect</a></li>
+                    <li><a href="#touch"><i class="icon-chevron-right"></i> touch</a></li>
+                </ul>
+            </div>
+            <div class="span9">
+
+
+                <!-- Global Bootstrap settings
+                ================================================== -->
+                <section id="core">
+                    <div class="page-header">
+                        <h1>Core</h1>
+                    </div>
+
+                    <h3>$()</h3>
+
+                <pre class="prettyprint">
+$(selector, [context])  =&gt; collection
+$(&lt;collection&gt;)  =&gt; same collection
+$(&lt;DOM nodes&gt;)  =&gt; collection
+$(htmlString)  =&gt; collection
+$(htmlString, attributes)  =&gt; collection
+</pre>
+
+                    <p>通过执行css选择器包装dom节点，创建元素或者从一个html片段来创建一个$对象。</p>
+                    <p>$集合是一个类似数组的对象，它具有链式方法来操作它指向的dom，除了$对象上的直接方法外(如$.extend)，文档对象中的所有方法都是集合方法。</p>
+                    <p>如果选择器中存在content参数(css选择器，dom，或者$集合对象)，那么只在所给的节点背景下进行css选择器；这个功能有点像使用$(context).find(selector)。</p>
+                    <p>可以通过一个html字符串片段来创建一个dom节点。也可以通过给定一组属性映射来创建节点。最快的创建但元素，使用&lt;div&gt; 或 &lt;div/&gt;形式。</p>
+                    <p>当一个函数附加在 DOMContentLoaded 事件的处理流程中。如果页面已经加载完毕，这个方法将会立即被执行。</p>
+
+                    <h2>语言辅助</h2>
+                    <h3>$.contains</h3>
+                    <pre class="prettyprint">$.contains(parent, node)  ⇒ boolean</pre>
+                    <p>检查父节点是否包含给定的dom节点，如果两者相同，则返回 false。</p>
+
+                    <h3>$.each</h3>
+<pre class="prettyprint">$.each(collection, function(index, item){ ... })  &gt; collection</pre>
+                    <p>遍历数组元素或以key-value值对方式遍历对象。回调函数返回 false 时停止遍历。</p>
+<pre class="prettyprint">
+$.each(['a', 'b', 'c'], function(index, item){
+  console.log('item %d is: %s', index, item)
+})
+
+var hash = { name: 'mobi.js', size: 'micro' }
+$.each(hash, function(key, value){
+  console.log('%s: %s', key, value)
+})
+</pre>
+
+                    <h3>$.extend</h3>
+                    <pre class="prettyprint">
+$.extend(target, [source, [source2, ...]])  =&gt; target
+$.extend(true, target, [source, ...])  =&gt; target
+</pre>
+                    <p>通过源对象扩展目标对象的属性，源对象属性将覆盖目标对象属性。</p>
+
+                    <p>默认情况下为，复制为浅复制。如果第一个参数为true表示深度复制。</p>
+
+                    <h3>$.fn</h3>
+                    <p>$是一个对象，它拥有$对象上所有可用的方法。如 addClass()， attr()，和其它方法。在这个对象添加一个方法，所有的$对象上都能用到该方法。</p>
+<pre class="prettyprint">
+$.fn.empty = function(){
+  return this.each(function(){ this.innerHTML = '' });
+}
+</pre>
+
+                    <h3>$.grep</h3>
+                    <pre class="prettyprint">
+$.extend(target, [source, [source2, ...]])  =&gt; target
+$.extend(true, target, [source, ...])  =&gt; target
+</pre>
+                    <p>通过源对象扩展目标对象的属性，源对象属性将覆盖目标对象属性。</p>
+
+                    <h3>$.inArray</h3>
+                    <pre class="prettyprint">
+$.inArray(element, array, [fromIndex])  =&gt; number
+</pre>
+                    <p>搜索数组中指定值并返回它的索引（如果没有找到则返回-1）。</p>
+
+                    <h3>$.isPlainObject </h3>
+                    <pre class="prettyprint">
+$.isPlainObject(object)  =&gt; boolean
+</pre>
+                    <p>测试对象是否是纯粹的对象（通过 "{}" 或者 "new Object" 创建的），如果是，则返回true。</p>
+<pre class="prettyprint">
+$.isPlainObject({})         // =&gt; true
+$.isPlainObject(new Object) // =&gt; true
+$.isPlainObject(new Date)   // =&gt; false
+$.isPlainObject(window)     // =&gt; false
+</pre>
+
+                    <h3>$.isWindow </h3>
+                    <pre class="prettyprint">
+$.isWindow(object)  =&gt; boolean
+</pre>
+                    <p>确定参数是否为一个窗口（window对象），如果是则返回true。</p>
+
+                    <h3>$.map </h3>
+                    <pre class="prettyprint">
+$.map(collection, function(item, index){ ... })  =&gt; collection
+</pre>
+                    <p>通过遍历集合中的元素，通过函数返回一个新的数组，null and undefined 将被过滤掉。</p>
+
+                    <h3>$.parseJSON </h3>
+                    <pre class="prettyprint">
+$.map(collection, function(item, index){ ... })  =&gt; collection
+</pre>
+                    <p>通过遍历集合中的元素，通过函数返回一个新的数组，null and undefined 将被过滤掉。</p>
+
+                    <h3>$.trim </h3>
+                    <pre class="prettyprint">
+$.trim(string)  =&gt; string
+</pre>
+                    <p>删除字符串开始和末尾的空白符。类似String.prototype.trim()。</p>
+
+                    <h3>$.type </h3>
+                    <pre class="prettyprint">
+$.type(object)  =&gt; string
+</pre>
+                    <p>
+获取JavaScript 对象的类型。可能的类型有： null undefined boolean number string function array date regexp object error。
+</p>
+<p>对于其它对象，它只是简单报告为“object”，如果你想知道一个对象是否是一个javascript普通对象，使用 isPlainObject。</p>
+
+                    <!--  DOM 操作     -->
+                    <h2>DOM操作</h2>
+                    <h3>push</h3>
+                    <pre class="prettyprint">
+push(element, [element2, ...])  =&gt; self
+</pre>
+                    <p>添加元素到当前$对象的最后。</p>
+
+                    <h3>concat</h3>
+                    <pre class="prettyprint">
+concat(nodes, [node2, ...])  =&gt; self
+</pre>
+                    <p>添加元素到一个$对象集合形成一个新数组。如果参数是一个数组，那么这个数组中的元素将会合并到$对象集合中。</p>
+
+                    <h3>slice</h3>
+                    <pre class="prettyprint">
+slice(start, [end])  =&gt; array
+</pre>
+                    <p>array中提取的方法。从start开始，如果end 指出。提取不包含end位置的元素。</p>
+
+                    <h3>after</h3>
+                    <pre class="prettyprint">
+after(content)  =&gt; self
+</pre>
+                    <p>在每个匹配的元素后插入内容。内容可以为html字符串，dom节点，或者节点组成的数组。</p>
+                    <pre class="prettyprint">
+$('form label').after('<p>A note below the label</p>');
+</pre>
+
+                    <h3>before</h3>
+                    <pre class="prettyprint">
+before(content)  =&gt; self
+</pre>
+                    <p>在匹配每个元素的前面（外面）插入内容。内容可以为html字符串，dom节点，或者节点组成的数组。</p>
+<pre class="prettyprint">
+$('form label').before('<p>A note below the label</p>');
+</pre>
+                    <h3>append</h3>
+                    <pre class="prettyprint">
+append(content)  =&gt; self
+</pre>
+                    <p>在每个匹配的元素末尾插入内容。内容可以为html字符串，dom节点，或者节点组成的数组。</p>
+<pre class="prettyprint">
+$('ul').append('&lt;li&gt;new list item&lt;/li&gt;');
+</pre>
+
+                    <h3>appendTo</h3>
+                    <pre class="prettyprint">
+appendTo(target)  =&gt; self
+</pre>
+                    <p>将匹配的元素插入到目标元素的末尾（里面的后面）。这个有点像 append，但是插入的目标与其相反。</p>
+<pre class="prettyprint">
+$('&lt;li&gt;new list item&lt;/li&gt;').appendTo('ul');
+</pre>
+
+                    <h3>prepend</h3>
+                    <pre class="prettyprint">
+prepend(content)  =&gt; self
+</pre>
+                    <p>将参数内容插入到每个匹配元素的前面（元素内部）。插入d的元素可以试html字符串片段，一个dom节点，或者一个节点的数组。</p>
+<pre class="prettyprint">
+$('ul').prepend('&lt;li&gt;new list item&lt;/li&gt;');
+</pre>
+
+                    <h3>prependTo</h3>
+                    <pre class="prettyprint">
+prependTo(target)  =&gt; self
+</pre>
+                    <p>将所有元素插入到目标前面（元素内）。这有点像prepend，但是是相反的方式。</p>
+<pre class="prettyprint">
+$('&lt;li&gt;new list item&lt;/li&gt;').prependTo('ul');
+</pre>
+
+                    <h3>clone</h3>
+                    <pre class="prettyprint">
+clone()  =&gt; collection
+</pre>
+                    <p>通过深度克隆来复制集合中的所有元素。</p>
+
+                    <h3>remove</h3>
+                    <pre class="prettyprint">
+remove()  =&gt; self
+</pre>
+                    <p>移出当前$对象中的元素。有效的从dom中移除。</p>
+
+                    <h3>empty</h3>
+                    <pre class="prettyprint">
+empty()  =&gt; self
+</pre>
+                    <p>从$对象集合中移除所有的dom子节点。</p>
+
+                    <h3>html</h3>
+                    <pre class="prettyprint">
+html()  =&gt; string
+html(content)  =&gt; self
+html(function(index, oldHtml){ ... })  =&gt; self
+</pre>
+                    <p>获取或设置$对象集合中元素的HTML内容。当content参数没有给定时，返回$对象集合中第一个元素的innerHtm。当content参数给定时。用其替换$对象集合中每个元素的content。content可以是append中描述的所有类型。</p>
+<pre class="prettyprint">
+$('.comment p').html(function(idx, oldHtml){
+  return oldHtml.replace(/(^|\W)@(\w{1,15})/g,
+    '$1@&lt;a href="http://twitter.com/$2"&gt;$2&lt;/a&gt;');
+})
+</pre>
+
+                    <h3>text</h3>
+                    <pre class="prettyprint">
+text()  =&gt; string
+text(content)  =&gt; self
+</pre>
+                    <p>获取或者设置所有$对象的文本内容。当content参数未给出。返回当前$对象集合中第一个元素的文本内容（包含子节点中的文本内容）。当content参数给出，使用它替换$对象集合中所有元素的文本内容。它有待点似 html，与它不同的是它不能用来获取或设置 HTML。</p>
+
+                    <h3>replaceWith</h3>
+                    <pre class="prettyprint">
+replaceWith(content)  =&gt; self
+</pre>
+                    <p>用提供的内容替换所有匹配的元素。(包含元素本身)。content参数可以为 before中描述的类型。</p>
+
+                    <h3>insertAfter</h3>
+                    <pre class="prettyprint">
+insertAfter(target)  =&gt; self
+</pre>
+                    <p>插入$对象集合中的元素到指定的每个元素后面的dom中。这个有点像 after，但是使用方式相反。</p>
+<pre class="prettyprint">
+$('&lt;p&gt;Emphasis mine.&lt;/p&gt;').insertAfter('blockquote');
+</pre>
+
+                    <h3>insertBefore</h3>
+                    <pre class="prettyprint">
+insertBefore(target)  =&gt; self
+</pre>
+                    <p>插入$对象集合中的元素到指定的每个元素前面的dom中。这个有点像 before，但是使用方式相反。</p>
+<pre class="prettyprint">
+$('&lt;p&gt;Emphasis mine.&lt;/p&gt;').insertBefore('blockquote');
+</pre>
+
+                    <h3>unwrap</h3>
+                    <pre class="prettyprint">
+unwrap()  =&gt; self
+</pre>
+                    <p>将匹配元素的父级元素删除，保留自身（和兄弟元素，如果存在）在原来的位置。</p>
+<pre class="prettyprint">
+$(document.body).append('&lt;div id=wrapper&gt;&lt;p&gt;Content&lt;/p&gt;&lt;/div&gt;');
+$('#wrapper p').unwrap().parents();
+</pre>
+
+                    <h3>wrap</h3>
+                    <pre class="prettyprint">
+wrap(structure)  =&gt; self
+wrap(function(index){ ... }) =&gt; self
+</pre>
+                    <p>在每个匹配的元素外层包上一个html元素。structure参数可以是一个单独的元素或者一些嵌套的元素。也可以是一个html字符串片段或者dom节点。还可以是一个生成用来包元素的回调函数，这个函数返回前两种类型的包裹片段。</p>
+<pre class="prettyprint">
+// wrap each button in a separate span:
+$('.buttons a').wrap('&lt;span&gt;');
+
+// wrap each code block in a div and pre:
+$('code').wrap('&lt;div class=highlight&gt;&lt;pre /&gt;&lt;/div&gt;');
+
+// wrap all form inputs in a span with classname
+// corresponding to input type:
+$('input').wrap(function(index){
+  return '&lt;span class=' + this.type + 'field /&gt;';
+})
+//=&gt; &lt;span class=textfield&gt;&lt;input type=text /&gt;&lt;/span&gt;,
+//   &lt;span class="searchfield"&gt;&lt;input type=search /&gt;&lt;/span&gt;
+
+// WARNING: will not work as expected!
+$('&lt;em&gt;broken&lt;/em&gt;').wrap('&lt;li&gt;').appendTo(document.body);
+// do this instead:
+$('&lt;em&gt;better&lt;/em&gt;').appendTo(document.body).wrap('&lt;li&gt;');
+</pre>
+
+                    <h3>wrapAll</h3>
+                    <pre class="prettyprint">
+wrapAll(structure)  =&gt; self
+</pre>
+                    <p>在所有匹配元素外面包一层HTML结构。</p>
+<pre class="prettyprint">
+// wrap all buttons in a single div:
+$('a.button').wrapAll('&lt;div id=buttons /&gt;');
+</pre>
+
+                    <h3>wrapInner</h3>
+                    <pre class="prettyprint">
+wrapInner(structure)  =&gt; self
+wrapInner(function(index){ ... })  =&gt; self
+</pre>
+                    <p>在匹配元素里的内容外包一层结构。</p>
+<pre class="prettyprint">
+// wrap the contents of each navigation link in a span:
+$('nav a').wrapInner('&lt;span&gt;');
+
+// wrap the contents of each list item in a paragraph and emphasis:
+$('ol li').wrapInner('&lt;p&gt;&lt;em /&gt;&lt;/p&gt;');
+</pre>
+
+                    <h2>查找操作</h2>
+                    <h3>children</h3>
+                    <pre class="prettyprint">
+children([selector])  =&gt; collection
+</pre>
+                    <p>获得每个匹配元素集合元素的直接子元素，如果selector存在，只返回符合css选择器的元素。</p>
+<pre class="prettyprint">
+$('ol').children('*:nth-child(2n)');
+//=&gt; every other list item from every ordered list
+</pre>
+
+                    <h3>find</h3>
+                    <pre class="prettyprint">
+find(selector)  =&gt; collection
+find(collection)  =&gt; collection
+find(element)  =&gt; collection
+</pre>
+                    <p>获得当前$集合对象内查找符合css选择器的每个元素的后代。</p>
+                    <p>如果参数为$集合对象或者元素，过滤它们，只有当它们在当前$集合对象中时，才回被返回。</p>
+<pre class="prettyprint">
+var form = $('#myform');
+form.find('input, select');
+</pre>
+
+                    <h3>siblings</h3>
+                    <pre class="prettyprint">
+siblings([selector])  =&gt; collection
+</pre>
+                    <p>获取$集合对象所有兄弟节点。如果css选择器参数给出。过滤出符合选择器的元素。</p>
+
+                    <h3>contents</h3>
+                    <pre class="prettyprint">
+contents()  =&gt; collection
+</pre>
+                    <p>获得每个匹配元素集合元素的子元素，包括文字和注释节点</p>
+
+                    <h3>first</h3>
+                    <pre class="prettyprint">
+first()  =&gt; collection
+</pre>
+                    <p>获取当前$对象集合中的第一个元素。</p>
+                    <pre class="prettyprint">$('form').first()</pre>
+
+                    <h3>last</h3>
+                    <pre class="prettyprint">
+last()  =&gt; collection
+</pre>
+                    <p>获取$集合对象中最后一个元素。</p>
+                    <pre class="prettyprint">$('li').last()</pre>
+
+                    <h3>next</h3>
+                    <pre class="prettyprint">
+next()  =&gt; collection
+next(selector)  =&gt; collection
+</pre>
+                    <p>获取$对象集合中每一个元素的下一个兄弟节点(可以选择性的带上过滤选择器)。</p>
+                    <pre class="prettyprint">$('dl dt').next()   //=> the DD elements</pre>
+
+                    <h3>prev</h3>
+                    <pre class="prettyprint">
+prev()  =&gt; collection
+prev(selector)  =&gt; collection
+</pre>
+                    <p>获取$对象集合中每一个元素的前一个兄弟节点，通过选择器来进行过滤。</p>
+
+                    <h3>offsetParent</h3>
+                    <pre class="prettyprint">
+offsetParent()  =&gt; collection
+</pre>
+                    <p>找到第一个定位过的祖先元素，在ccs中意味着它的position 值为“relative”, “absolute” or “fixed”</p>
+
+                    <h3>parent</h3>
+                    <pre class="prettyprint">
+parent([selector])  =&gt; collection
+</pre>
+                    <p>获取$对象集合中每个元素的直接父元素。如果css选择器参数给出。过滤出符合条件的元素。</p>
+
+                    <h3>parents</h3>
+                    <pre class="prettyprint">
+parent([selector])  =&gt; collection
+</pre>
+                    <p>获取$对象集合每个元素所有的祖先元素。如果css选择器参数给出，过滤出符合条件的元素。</p>
+
+                    <h3>closest</h3>
+                    <pre class="prettyprint">
+closest(selector, [context])  =&gt; collection
+closest(collection)  =&gt; collection
+closest(element)  =&gt; collection
+</pre>
+                    <p>从元素本身开始，逐级向上级元素匹配，并返回最先匹配selector的祖先元素。如果context节点参数存在。那么直考虑该节点的后代。这个方法与 parents(selector)有点相像，但他只返回最先匹配的祖先元素。</p>
+<pre class="prettyprint">
+var input = $('input[type=text]');
+input.closest('form');
+</pre>
+
+                    <h3>each</h3>
+                    <pre class="prettyprint">
+each(function(index, item){ ... })  =&gt; self
+</pre>
+                    <p>遍历一个$集合对象，为每一个匹配元素执行一个函数。this关键字指向当前item(作为函数的第二个参数传递)。如果函数返回 false，遍历结束。</p>
+<pre class="prettyprint">
+$('form input').each(function(index){
+  console.log('input %d is: %o', index, this)
+});
+</pre>
+
+                    <h3>filter</h3>
+                    <pre class="prettyprint">
+filter(selector)  =&gt; collection
+filter(function(index){ ... })  &gt; collection
+</pre>
+                    <p>过滤$集合对象，返回的$集合对象里面的项满足参数中的css选择器。如果参数为一个函数，函数返回有实际值得时候，元素才会被返回。在函数中， this 关键字指向当前的元素。</p>
+
+                    <h3>reduce</h3>
+                    <pre class="prettyprint">
+reduce(function(memo, item, index, array){ ... }, [initial])  =&gt; value
+</pre>
+                    <p>与 Array.reduce有相同的用法，遍历当前$对象集合。memo是函数上次的返回值。迭代进行遍历。</p>
+
+                    <h3>eq</h3>
+                    <pre class="prettyprint">
+eq(index)  =&gt; collection
+</pre>
+                    <p>从当前$对象集合中获取给定索引号的元素。</p>
+                    <pre class="prettyprint">
+$('li').eq(0)   //=&gt; only the first list item
+$('li').eq(-1)  //=&gt; only the last list item
+</pre>
+
+                    <h3>index</h3>
+                    <pre class="prettyprint">
+index([element])  =&gt; number
+</pre>
+                    <p>获取一个元素的位置。当elemen参数没有给出时，返回当前元素在兄弟节点中的位置。当element参数给出时，返回它在当前$对象集合中的位置。如果没有该元素，则返回-1。</p>
+                    <pre class="prettyprint">
+$('li:nth-child(2)').index()  //=&gt; 1
+</pre>
+
+                    <h3>size</h3>
+                    <pre class="prettyprint">
+size()  =&gt; number
+</pre>
+                    <p>获取$对象集合中元素的数量。</p>
+
+                    <h3>is</h3>
+                    <pre class="prettyprint">
+is(selector)  =&gt; boolean
+</pre>
+                    <p>判断当前$元素集合中的第一个元素是否符css选择器。对于基础支持jquery的非标准选择器类似： :visible包含在可选的“selector”模块中。</p>
+
+                    <h3>not</h3>
+                    <pre class="prettyprint">
+not(selector)  =&gt; collection
+not(collection)  =&gt; collection
+not(function(index){ ... })  =&gt; collection
+</pre>
+                    <p>过滤当前$对象集合，获取一个新的$对象集合，它里面的元素不能匹配css选择器。如果另一个参数为$集合对象，那么返回的新$对象中的元素都不包含在该参数对象中。如果参数是一个函数。仅仅包含函数执行为false值得时候的元素，函数的 this 关键字指向当前循环元素。</p>
+
+                    <h3>has</h3>
+                    <pre class="prettyprint">
+has(selector)  =&gt; collection
+has(node)  =&gt; collection
+</pre>
+                    <p>判断当前$对象集合的子元素是否有符合选择器的元素，或者是否包含指定的dom节点，如果有，则返回新的$集合对象，该对象过滤掉不含有选择器匹配元素或者不含有指定dom节点的对象。</p>
+                    <pre class="prettyprint">$('ol &gt; li').has('a[href]')</pre>
+
+                    <h2>属性操作</h2>
+                    <h3>attr</h3>
+                    <pre class="prettyprint">
+attr(name)  =&gt; string
+attr(name, value)  =&gt; self
+attr(name, function(index, oldValue){ ... })  =&gt; self
+attr({ name: value, name2: value2, ... })  =&gt; self
+</pre>
+                    <p>读取或设置dom的属性。如果没有给定value参数，则读取$对象第集合一个元素的属性值。当给定了value参数。则设置$对象集合中所有元素所有元素的属性值。当value参数为null，那么这个属性将被移除(类似removeAttr)，多个属性能以通过对象值对的方式进行设置。</p>
+<p>要读取dom的属性如 checked和selected, 使用 prop。</p>
+                    <pre class="prettyprint">
+var form = $('form');
+form.attr('action');             //=&gt; read value
+form.attr('action', '/create');  //=&gt; set value
+form.attr('action', null);       //=&gt; remove attribute
+
+// multiple attributes:
+form.attr({
+  action: '/create',
+  method: 'post'
+});
+</pre>
+
+                    <h3>data</h3>
+                    <pre class="prettyprint">
+data(name)  =&gt; value
+data(name, value)  =&gt; self
+</pre>
+                    <p>读取或写入dom的 data-* 属性。行为有点像 attr ，但是属性名称前面加上 data-。</p>
+                    <p>当读取属性值时，会有下列转换：</p>
+                    <ul>
+                        <li>"true", "false", and "null" 被转换为相应的类型;</li>
+                        <li>数字值转换为实际的数字类型;</li>
+                        <li>JSON值将会被解析，如果它是有效的JSON;</li>
+                        <li>其它的一切作为字符串返回.</li>
+                    </ul>
+
+                    <h3>removeAttr</h3>
+                    <pre class="prettyprint">
+removeAttr(name)  =&gt; self
+</pre>
+                    <p>移除当前$对象集合中所有元素的指定属性。</p>
+
+                    <h3>prop</h3>
+                    <pre class="prettyprint">
+prop(name)  =&gt; value
+prop(name, value)  =&gt; self
+prop(name, function(index, oldValue){ ... })  =&gt; self
+</pre>
+                    <p>读取或设置dom元素的属性值。它在读取属性值的情况下优先于 attr，因为这些属性值会因为用户的交互发生改变，如checked and selected。</p>
+
+                    <h3>val</h3>
+                    <pre class="prettyprint">
+val()  =&gt; string
+val(value)  =&gt; self
+val(function(index, oldValue){ ... })  =&gt; self
+</pre>
+                    <p>获取或设置匹配元素的值。当value参数不存在。返回第一个元素的值。如果是&lt;select multiple&gt;标签，则返回一个数组。</p>
+
+                    <h2>样式操作</h2>
+
+                    <h3>css</h3>
+                    <pre class="prettyprint">
+css(property)  =&gt; value
+css(property, value)  =&gt; self
+css({ property: value, property2: value2, ... })  =&gt; self
+</pre>
+                    <p>读取或设置dom元素的css属性。当value参数不存在的时候，返回$对象集合中第一个元素的css属性。当value参数存在时，设置$对象集合中每一个元素的对应css属性。多条css属性可以利用对象值对的方式进行设置。</p>
+                    <p>当value为空(空字符串，null 或 undefined)，那个css属性将会被移出。当value参数为一个无单位的数字，如果该css属性需要单位，“px”将会自动添加到该属性上。</p>
+                    <pre class="prettyprint">
+var elem = $('h1');
+elem.css('background-color');          // read property
+elem.css('background-color', '#369');  // set property
+elem.css('background-color', '');      // remove property
+
+// set multiple properties:
+elem.css({ backgroundColor: '#8EE', fontSize: 28 });
+</pre>
+
+                    <h3>addClass</h3>
+                    <pre class="prettyprint">
+addClass(name)  =&gt; self
+addClass(function(index, oldClassName){ ... })  =&gt; self
+</pre>
+                    <p>为每个匹配的元素添加指定的class类名。多个class类名通过空格分隔。</p>
+
+                    <h3>removeClass</h3>
+                    <pre class="prettyprint">
+removeClass([name])  =&gt; self
+removeClass(function(index, oldClassName){ ... })  =&gt; self
+</pre>
+                    <p>移动当前$对象集合中所有元素的指定class。如果name参数未给出。将移出所有的class。多个class参数名称可以利用空格分隔。下例移除了两个class。</p>
+
+                    <h3>hasClass</h3>
+                    <pre class="prettyprint">
+hasClass(name)  =&gt; boolean
+</pre>
+                    <p>检查$对象集合中是否有元素含有指定的class。</p>
+
+                    <h3>toggleClass</h3>
+                    <pre class="prettyprint">
+toggleClass(names, [setting])  =&gt; self
+toggleClass(function(index, oldClassNames){ ... }, [setting])  =&gt; self
+</pre>
+                    <p>在匹配的元素集合中的每个元素上添加或删除一个或多个样式类。如果class的名称存在则删除它，如果不存在，就添加它。如果 setting的值为真，这个功能类似于 addClass，如果为假，这个功能类似与 removeClass。</p>
+
+                    <h3>height</h3>
+                    <pre class="prettyprint">
+height()  =&gt; number
+height(value)  =&gt; self
+height(function(index, oldHeight){ ... })  =&gt; self
+</pre>
+                    <p>获取$对象集合中第一个元素的高度；或者设置$对象集合中所有元素的高度。</p>
+                    <pre class="prettyprint">
+$('#foo').height()   // =&gt; 123
+$(window).height()   // =&gt; 838 (viewport height)
+$(document).height() // =&gt; 22302
+</pre>
+
+                    <h3>width</h3>
+                    <pre class="prettyprint">
+width()  =&gt; number
+width(value)  =&gt; self
+width(function(index, oldWidth){ ... })  =&gt; self
+</pre>
+                    <p>获取$对象集合中第一个元素的宽；或者设置$对象集合所有元素的宽。</p>
+                    <pre class="prettyprint">
+$('#foo').width()   // =&gt; 123
+$(window).width()   // =&gt; 838 (viewport width)
+$(document).width() // =&gt; 22302
+</pre>
+
+                    <h3>show</h3>
+                    <pre class="prettyprint">
+show()  =&gt; self
+</pre>
+                    <p>恢复$对象集合中每个元素默认的“display”值。如果你用 hide将元素隐藏，用该属性可以将其显示。相当于干掉了display：none。</p>
+
+                    <h3>hide</h3>
+                    <pre class="prettyprint">
+hide()  =&gt; self
+</pre>
+                    <p>通过设置css的属性display 为 none来将$对象集合中的元素隐藏。</p>
+
+                    <h3>toggle</h3>
+                    <pre class="prettyprint">
+toggle([setting])  =&gt; self
+</pre>
+                    <p>显示或隐藏匹配元素。如果 setting为true，相当于show 法。如果setting为false。相当于 hide方法。</p>
+                    <pre class="prettyprint">
+var input = $('input[type=text]');
+$('#too_long').toggle(input.val().length &gt; 140);
+</pre>
+
+                    <h3>offset</h3>
+                    <pre class="prettyprint">
+offset()  =&gt; object
+offset(coordinates)  =&gt; self
+offset(function(index, oldOffset){ ... })  =&gt; self
+</pre>
+                    <p>获得当前元素相对于document的位置。返回一个对象含有： top, left, width和height. 当给定一个对象属性left和top使用这些值来相对于document对每一个元素进行定位。</p>
+
+                    <h3>position</h3>
+                    <pre class="prettyprint">
+position()  =&gt; object
+</pre>
+                    <p>获取$对象集合中第一个元素的位置。相对于 offsetParent。当绝对定位的一个素靠近另一个元素的时候，这个方法是有用的。</p>
+                    <pre class="prettyprint">
+var pos = element.position();
+
+// position a tooltip relative to the element
+$('#tooltip').css({
+  position: 'absolute',
+  top: pos.top - 30,
+  left: pos.left
+});
+</pre>
+
+                    <h3>scrollTop</h3>
+                    <pre class="prettyprint">
+scrollTop()  =&gt; number
+</pre>
+                    <p>获取页面上的滚动元素或者整个窗口已经滚动的像素值。</p>
+
+                    <h2>其他</h2>
+
+                    <h3>ready</h3>
+                    <pre class="prettyprint">
+ready(function($){ ... })  =&gt; self
+</pre>
+                    <p>添加一个事件侦听器，当页面dom加载完毕 “DOMContentLoaded” 事件触发时触发。建议使用 $()来代替这种用法。</p>
+
+                </section>
+
+
+            <!-- Lang
+            ================================================== -->
+            <section id="lang">
+                <div class="page-header">
+                    <h1>lang</h1>
+                </div>
+            </section>
+
+
+            <!-- event
+            ================================================== -->
+            <section id="event">
+                <div class="page-header">
+                    <h1>event</h1>
+                </div>
+            </section>
+
+
+            <!-- ajax
+            ================================================== -->
+            <section id="ajax">
+                <div class="page-header">
+                    <h1>ajax</h1>
+                </div>
+            </section>
+
+
+            <!-- ajax_ext
+            ================================================== -->
+            <section id="ajax_ext">
+                <div class="page-header">
+                    <h1>ajax_ext</h1>
+                </div>
+            </section>
+
+            <!-- history
+            ================================================== -->
+            <section id="history">
+                <div class="page-header">
+                    <h1>history</h1>
+                </div>
+            </section>
+
+            <!-- detect
+            ================================================== -->
+            <section id="detect">
+                <div class="page-header">
+                    <h1>detect</h1>
+                </div>
+            </section>
+
+            <!-- touch
+            ================================================== -->
+            <section id="touch">
+                <div class="page-header">
+                    <h1>touch</h1>
+                </div>
+            </section>
+
+
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- Footer
+    ================================================== -->
+    <footer class="footer">
+        <div class="container">
+            <ul class="footer-links">
+                <li><a href="https://github.com/spemoon/mobi">github</a></li>
+                <li class="muted">&middot;</li>
+                <li><a href="https://github.com/spemoon/mobi/issues?state=open">Issues</a></li>
+                <li class="muted">&middot;</li>
+            </ul>
+        </div>
+    </footer>
+
+
+<!-- Le javascript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="../js/jquery.js"></script>
+<script src="../js/bootstrap-scrollspy.js"></script>
+<script src="../js/bootstrap-affix.js"></script>
+
+<script src="../js/application.js"></script>
+
+
+</body>
+</html>
