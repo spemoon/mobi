@@ -1,6 +1,6 @@
 module.exports = function(grunt) {
 
-    var server = 'http://localhost/mobi/';
+    var server = 'http://mobi.com/';
     var networkFileList = ['test/lib/util/ajax/index.html', 'test/lib/util/ajax.ext/index.html'];
     var prefixPath = function(arr, prefix) {
         var temp = [];
