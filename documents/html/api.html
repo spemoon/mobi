@@ -760,17 +760,19 @@ ready(function($){ ... })  =&gt; self
                 <div class="page-header">
                     <h1>lang</h1>
                 </div>
-                    <h3>$.isPlainObject </h3>
+                    <h3>isFunction</h3>
 <pre class="prettyprint">
 $.isFunction(val)  =&gt; boolean
 </pre>
                     <p>测试对象是否是函数类型，如果是，则返回true。</p>
 
+                    <h3>isArray</h3>
 <pre class="prettyprint">
 $.isArray(val)  =&gt; boolean
 </pre>
                     <p>测试对象是否是Array对象，如果是，则返回true。</p>
 
+                    <h3>isUndefined</h3>
 <pre class="prettyprint">
 $.isUndefined(val)  =&gt; boolean
 </pre>
@@ -797,51 +799,51 @@ name = lang.bind(function(s1, s2) {
 console.log(name);    
 </pre>
 
-                     <h3>bind</h3>
+                     <h3>delay</h3>
 <pre class="prettyprint">
-$.delay(fn, n) = &gt; number
+$.delay(fn, n) =&gt; number
 </pre>
                     <p>延迟n毫秒执行fn，后续参数将作为fn的参数传入</p>
 
                      <h3>defer</h3>
 <pre class="prettyprint">
-$.defer(fn) = &gt; Function
+$.defer(fn) =&gt; Function
 </pre>
                     <p>延迟1秒执行fn，后续参数将作为fn的参数传入,用于执行开销大的计算和无阻塞ui线程的html渲染</p>
 
                    <h3>throttle</h3>
 <pre class="prettyprint">
-$.throttle(fn, wait) = &gt; val
+$.throttle(fn, wait) =&gt; val
 </pre>
                     <p>单位时间间隔wait内最多只能执行一次fn如果单位时间内多次触发，接受第一次，此时第二次，第二次将在第一次执行完wait后执行,若在第二次等待过程中，第三次进来，则第二次会被放弃（参数被替换）同理，多次进来，第一次执行后等待wait，执行的总是最后一次</p>
 
                    <h3>debounce</h3>
 <pre class="prettyprint">
-$.debounce(fn, wait, immediate) = &gt; Function
+$.debounce(fn, wait, immediate) =&gt; Function
 </pre>
                     <p>单位时间wait 内触发多次fn的话，前面的fn将被清除，等待使用最后一次触发的fn如果immediate设置为true，则第一次会立即触发</p>
 
                     <h3>once</h3>
 <pre class="prettyprint">
-$.once(fn) = &gt; Function
+$.once(fn) =&gt; Function
 </pre>
                     <p>fn只执行一次，然后再调用会直接返回第一次执行的结果</p>
 
                     <h3>wrap</h3>
 <pre class="prettyprint">
-$.wrap(fn, wrapper) = &gt; Function
+$.wrap(fn, wrapper) =&gt; Function
 </pre>
                     <p>将fn包入wrapper，fn作为wrapper的第一个参数，这样可以达到切面的作用</p>
 
                      <h3>result</h3>
 <pre class="prettyprint">
-$.wrap(obj, key) = &gt; {*}
+$.wrap(obj, key) =&gt; {*}
 </pre>
                     <p>obj[key]是function则执行并返回执行后的值，其他则直接返回</p>
 
                     <h3>each</h3>
 <pre class="prettyprint">
-$.each(obj, iterator, context) = &gt; {*}
+$.each(obj, iterator, context) =&gt; {*}
 </pre>
                     <p>遍历数组或对象，逐个执行迭代器.terator 迭代器，参数为(当前元素，当前下标/key，整个数组/对象)
 返回false将中断遍历</p>
@@ -853,25 +855,25 @@ lang.each(a, function(val, i, arr) {
 </pre>
                     <h3>indexOf</h3>
 <pre class="prettyprint">
-$.indexOf(arr, item, index) = &gt; number
+$.indexOf(arr, item, index) =&gt; number
 </pre>
                     <p>数组中顺序查找，找到返回下标，没找到返回-1，可以指定index表明从index下标开始往后查找</p>
 
                     <h3>lastIndexOf</h3>
 <pre class="prettyprint">
-$.lastIndexOf(arr, item, index) = &gt; number
+$.lastIndexOf(arr, item, index) =&gt; number
 </pre>
                     <p>数组中倒序查找，找到返回下标，没找到返回-1，可以指定index表明从index下标开始往前查找</p>
 
                     <h3>uniqueId</h3>
 <pre class="prettyprint">
-$.uniqueId() = &gt; string
+$.uniqueId() =&gt; string
 </pre>
                     <p>生成一个唯一的id</p>
 
                     <h3>trim</h3>
 <pre class="prettyprint">
-$.trim(str) = &gt; {*}
+$.trim(str) =&gt; {*}
 </pre>
                     <p>消除字符串两边的空白</p>
 <pre class="prettyprint">
@@ -902,6 +904,108 @@ equal(o1.age, 123);    //相等
                 <div class="page-header">
                     <h1>event</h1>
                 </div>
+
+                <h3>$.Event</h3>
+                <pre class="prettyprint">
+$.Event(type, [properties])  =&gt; event
+</pre>
+                    <p>创建并初始化一个指定的dom事件。如果properties参数给出，使用它来扩展出新的事件对象。默认情况下，事件被设置为冒泡方式；这个可以通过设置bubbles为false来关闭。</p>
+<p>初始化的功能可以使用 trigger来触发。</p>
+                <pre class="prettyprint">
+$.Event('mylib:change', { bubbles: false });
+</pre>
+
+                <h3>bind</h3>
+                <pre class="prettyprint">
+bind(type, function(e){ ... })  =&gt; self
+bind({ type: handler, type2: handler2, ... })  =&gt; self
+</pre>
+                <p>为一个元素绑定一个处理事件。</p>
+
+                <h3>unbind</h3>
+                <pre class="prettyprint">
+unbind(type, function(e){ ... })  =&gt; self
+unbind({ type: handler, type2: handler2, ... })  =&gt; self
+</pre>
+                <p>移除通过 bind 注册的事件。</p>
+
+                <h3>one</h3>
+                <pre class="prettyprint">
+one(type, function(e){ ... })  =&gt; self
+one({ type: handler, type2: handler2, ... })  =&gt; self
+</pre>
+                <p>添加一个处理事件到元素。处理函数在每个元素上最多执行一次。</p>
+
+                <h3>delegate</h3>
+                <pre class="prettyprint">
+delegate(selector, type, function(e){ ... })  =&gt; self
+delegate(selector, { type: handler, type2: handler2, ... })  =&gt; self
+</pre>
+                <p>基于一组特定的根元素为所有选择器匹配的元素附加一个处理事件，匹配的元素可能现在或将来才创建。</p>
+
+                <h3>undelegate</h3>
+                <pre class="prettyprint">
+undelegate(selector, type, function(e){ ... })  =&gt; self
+undelegate(selector, { type: handler, type2: handler2, ... })  =&gt; self
+</pre>
+                <p>移除通过delegate 注册的事件。</p>
+
+                <h3>live</h3>
+                <pre class="prettyprint">
+live(type, function(e){ ... })  =&gt; self
+live({ type: handler, type2: handler2, ... })  =&gt; self
+</pre>
+                <p>类似delegate，添加一个个事件处理器到符合目前选择器的所有元素匹配，匹配的元素可能现在或将来才创建。</p>
+
+                <h3>die</h3>
+                <pre class="prettyprint">
+die(type, function(e){ ... })  =&gt; self
+die({ type: handler, type2: handler2, ... })  =&gt; self
+</pre>
+                <p>删除通过 live 添加的事件。</p>
+
+                <h3>on</h3>
+                <pre class="prettyprint">
+on(type, [selector], function(e){ ... })  =&gt; self
+on({ type: handler, type2: handler2, ... }, [selector])  =&gt; self
+</pre>
+                <p>添加事件到相关对象集合上。多个事件可以通过空格的字符串方式添加。或者以事件类型、函数对象的 方式。</p>
+                <p>如果css选择器给出，事件的对象满足选择器条件时。事件才会被触发。</p>
+                <p>事件处理程序在触发事件元素或者css选择器匹配的元素的上下文中执行(this指向触发事件的元素)。</p>
+                <p>当事件处理程序返回false, 或调用preventDefault()，浏览器的默认事件将会被阻止。</p>
+                <pre class="prettyprint">
+var elem = $('#content');
+// observe all clicks inside #content:
+elem.on('click', function(e){ ... });
+// observe clicks inside navigation links in #content
+elem.on('click', 'nav a', function(e){ ... });
+// all clicks inside links in the document
+$(document).on('click', 'a', function(e){ ... });
+</pre>
+
+                <h3>off</h3>
+                <pre class="prettyprint">
+off(type, [selector], function(e){ ... })  =&gt; self
+off({ type: handler, type2: handler2, ... }, [selector])  =&gt; self
+off(type, [selector])  =&gt; self
+off()  =&gt; self
+</pre>
+                <p>移除通过 on 注册的事件(用bind或者用on注册的事件)。如果没有参数，将移出当前元素上所有的注册事件。</p>
+
+                <h3>trigger</h3>
+                <pre class="prettyprint">
+trigger(event, [data])
+</pre>
+                <p>在相关对象集合的元素上触发指定的事件。事件可以是一个字符串，也可以是一个 $.Event 对象。如果data参数存在，它会作为参数传递给事件函数。</p>
+                <pre class="prettyprint">
+// add a handler for a custom event
+$(document).on('mylib:change', function(e, from, to){
+  console.log('change on %o with data %s, %s', e.target, from, to);
+})
+// trigger the custom event
+$(document.body).trigger('mylib:change', ['one', 'two']);
+</pre>
+
             </section>
 
 
