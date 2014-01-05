@@ -7,9 +7,6 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
 	<title>demo——touch</title>
 	<link rel="stylesheet" href="../../public/themes/default/css/touch/touch_1.css" media="all">
-	<script src="../../public/js/zepto/zepto.min.js"></script>
-	<script src="../../js/lib/util/touch/touch.js"></script>
-	<script src="app1.js"></script>
 </head>
 <body>
 	<div id="demo1-wrapper">
@@ -22,5 +19,9 @@
 		</div>
 		
 	</div>	
+    <script src="../../public/js/seajs/sea.js"></script>
+	<script>
+		seajs.use('./app1');
+	</script>
 </body>
 </html>

@@ -7,6 +7,8 @@
 define(function(require, exports, module) {
 
     var $ = require('../core');
+    var event = require('../event');
+    var fx = require('../fx');
     /**
      * 内部变量初始化
      * @touchDataObj    记录节点在touch事件中数据的变化
@@ -244,6 +246,7 @@ define(function(require, exports, module) {
      *  flickHold       是否是轻触，默认false
      *  snapSpeed       动画速度
      *  flickSnapSpeed  轻触动画速度
+     *  smooth          是否开启顺滑过度，默认false，不开启
      * @return {[type]}
      */
     var touch = function(params) {
@@ -256,6 +259,7 @@ define(function(require, exports, module) {
         this.flickHold = params.flickHold || false;
         this.snapSpeed = params.snapSpeed || 0.3;
         this.flickSnapSpeed = params.flickSnapSpeed || 0.3;
+        this.smooth = params.smooth || false;
     };
 
     touch.prototype = (function() {
@@ -398,8 +402,18 @@ define(function(require, exports, module) {
                 var anchor = parseInt(el.data('anchor'), 10);
                 var pos = parseInt(el.data('pos'), 10);
                 var nearestSeg;
+                var offset = pos - anchor;
 
-                nearestSeg = (pos < 0) ? Math.abs(Math.round(pos / segmentPx)) : 0;
+                if (this.smooth) {
+                    nearestSeg = (pos < 0) ? Math.abs(Math.floor(pos / segmentPx)) : 0;
+                    if (offset > 0) {
+                        nearestSeg -= 1;
+                    } else if (offset > 0) {
+                        nearestSeg += 1;
+                    }
+                } else {
+                    nearestSeg = (pos < 0) ? Math.abs(Math.round(pos / segmentPx)) : 0;
+                }
 
                 if(typeof callback === 'function') {
                     callback.call(this, touchData, segment);
@@ -479,8 +493,8 @@ define(function(require, exports, module) {
                 var segments = parseInt(el.data('segments'), 10);
                 var segment = parseInt(el.data('segment'), 10);
                 var segmentPx = parseInt(el.data('segmentPx'), 10);
-                var snapSpeed = parseFloat(el.data('snapSpeed'), 10);
-                var flickSnapSpeed = parseFloat(el.data('flickSnapSpeed'), 10);
+                var snapSpeed = el.data('snapSpeed');
+                var flickSnapSpeed = el.data('flickSnapSpeed');
                 var pos = -(segment * segmentPx);
                 var easing = 'ease-out';
                 var style;
@@ -561,5 +575,5 @@ define(function(require, exports, module) {
         };
     })();
 
-    this.touch = touch;
+    module.exports = touch;
 });
